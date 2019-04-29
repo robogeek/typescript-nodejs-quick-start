@@ -1,0 +1,23 @@
+{
+  "name": "registrar",
+  "version": "1.0.0",
+  "description": "Database persistence for university registrar",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prepublish": "npm run build",
+    "test": "cd test && npm run test"
+  },
+  "author": "David Herron <david@davidherron.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "forerunnerdb": "^2.0.22",
+    "fs-extra": "^7.0.1",
+    "js-yaml": "^3.12.0"
+  }
+}

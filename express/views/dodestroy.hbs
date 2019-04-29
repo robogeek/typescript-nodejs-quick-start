@@ -1,0 +1,23 @@
+
+<h1>{{title}}</h1>
+
+<form method='POST' action='/registrar/students/destroy/confirm'>
+<div class="container-fluid">
+    <input type='hidden' name='id' value='{{ student.id }}'>
+    <p class="form-text">Delete {{ student.name }}?</p>
+
+    <div class="btn-group">
+        <button type="submit" value='DELETE' 
+                class="btn btn-outline-dark">DELETE</button>
+        <a class="btn btn-outline-dark" 
+            href="/registrar/students/read?id={{ student.id }}" 
+            role="button">
+            Cancel
+        </a>
+    </div>
+</div>
+</form>
+
+
+{{> footerjs}}
+

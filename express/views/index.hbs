@@ -1,0 +1,11 @@
+
+<h1>{{title}}</h1>
+
+{{#each students}}
+<ul>
+    <li><a href="/registrar/students/read?id={{ id }}">{{ name }}</a></li>
+</ul>
+{{/each}}
+
+
+{{> footerjs}}

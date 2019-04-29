@@ -1,0 +1,63 @@
+
+<h1>{{title}}</h1>
+
+<form method="POST" action="/registrar/students">
+    <div class="container-fluid">
+        {{#if docreate}}
+        <input type='hidden' name='docreate' value="create">
+        <input type='hidden' name='id' value="-1">
+        {{else}}
+        <input type='hidden' name='docreate' value="update">
+        <input type='hidden' name='id' value="id">
+        {{/if}}
+        
+        <div class="form-group row">
+        <label for="name"  class="col-1 col-form-label">Name</label>
+        <div class="col">
+            <input type="text" class="form-control" 
+                id='name' name='name' placeholder="student name" 
+                value='{{#if student }}{{student.name}}{{/if}}'>
+        </div>
+        </div>
+
+        <div class="form-group row">
+        <label for="entered"  class="col-1 col-form-label">Year Entered</label>
+        <div class="col">
+            <input type="text" class="form-control" 
+                id='entered' name='entered' placeholder="YYYY" 
+                value='{{#if student }}{{student.entered}}{{/if}}'>
+        </div>
+        </div>
+
+        <div class="form-group row">
+        <label for="grade"  class="col-1 col-form-label">Grade</label>
+        <div class="col">
+            <input type="text" class="form-control" 
+                id='grade' name='grade' placeholder="# 1-4" 
+                value='{{#if student }}{{student.grade}}{{/if}}'>
+        </div>
+        </div>
+
+        <div class="form-group row">
+        <label for="gender" class="col-1 col-form-label">Gender</label>
+        <div class="col">
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="genderMale" 
+                        name="gender" value="male" class="custom-control-input">
+                <label class="custom-control-label" for="genderMale">Male</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="genderFemale" 
+                        name="gender" value="female" class="custom-control-input">
+                <label class="custom-control-label" for="genderFemale">Female</label>
+            </div>
+        </div>
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit</button>
+
+    </div>
+</form>
+
+{{> footerjs}}
+

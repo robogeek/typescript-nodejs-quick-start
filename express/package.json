@@ -1,0 +1,35 @@
+{
+  "name": "typescript-express-example",
+  "version": "1.0.0",
+  "description": "Example of using Express with TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch-ts": "tsc -w",
+    "serve": "node dist/index.js"
+  },
+  "author": "David Herron <david@davidherron.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "bootstrap": "^4.3.1",
+    "cookie-parser": "^1.4.4",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.4",
+    "hbs": "^4.0.4",
+    "jquery": "^3.3.1",
+    "method-override": "^3.0.0",
+    "morgan": "^1.9.1",
+    "popper.js": "^1.14.7",
+    "registrar": "file:../registrar"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.1",
+    "@types/errorhandler": "0.0.32",
+    "@types/express": "^4.16.1",
+    "@types/method-override": "0.0.31",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^11.13.7",
+    "typescript": "^3.4.5"
+  }
+}

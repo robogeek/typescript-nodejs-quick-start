@@ -1,0 +1,42 @@
+
+<h1>{{title}}</h1>
+
+<div class="container-fluid">
+    <table class="row">
+        <tr>
+            <th>Name</th>
+            <td>{{ student.name }}</td>
+        </tr>
+        <tr>
+            <th>Year Entered</th>
+            <td>{{ student.entered }}</td>
+        </tr>
+        <tr>
+            <th>Grade Level</th>
+            <td>{{ student.grade }}</td>
+        </tr>
+        <tr>
+            <th>Gender</th>
+            <td>{{ student.gender }}</td>
+        </tr>
+    </table>
+
+    <div class="row"><div class="col-xs-12">
+    <div class="btn-group">
+        <a class="btn btn-outline-dark" 
+            href="/registrar/students/destroy?key={{ student.id }}" 
+            role="button">
+            Delete
+        </a>
+        <a class="btn btn-outline-dark" 
+            href="/registrar/students/update?key={{ student.id }}" 
+            role="button">
+            Edit
+        </a>
+    </div>
+    </div></div>
+</div>
+
+
+{{> footerjs}}
+
