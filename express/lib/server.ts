@@ -4,7 +4,6 @@ import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import * as path from "path";
 import * as hbs from 'hbs';
-import errorHandler = require("errorhandler");
 import methodOverride = require("method-override");
 
 import { RegistrarDB } from "registrar";
@@ -26,7 +25,7 @@ export class App {
     }
 
     private configure(): void {
-        this.registrar = new RegistrarDB();
+        this.registrar = new RegistrarDB(path.join(__dirname, '..', 'registrarDB'));
         registrarController.init(this.registrar);
         this.app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -52,18 +51,7 @@ export class App {
         }));
 
         this.app.use(cookieParser('keyboard mouse'));
-
         this.app.use(methodOverride());
-
-        this.app.use(function(err: any, 
-                                req: express.Request, 
-                                res: express.Response, 
-                                next: express.NextFunction) {
-            err.status = 404;
-            next(err);
-        });
-
-        this.app.use(errorHandler());
     }
 
     private mountRoutes (): void {

@@ -1,4 +1,5 @@
 
+import * as util from 'util';
 import { Student } from 'registrar';
 
 let registrar: any;
@@ -16,7 +17,9 @@ export function student(id) : Student {
 }
 
 export async function addStudent(student: Student) {
-    return await registrar.students.addStudent(student);
+    let ret = await registrar.students.addStudent(student);
+    console.log(`addStudent ${util.inspect(ret)}`);
+    return ret;
 }
 
 export async function updateStudent(student: Student) {

@@ -1,6 +1,5 @@
 
 const server = require("./server");
-const debug = require("debug")("express:server");
 const http = require("http");
 
 const httpPort = normalizePort(process.env.PORT || 8080);
@@ -30,13 +29,6 @@ httpServer.on("error", function(error) {
     default:
         throw error;
     }
-});
-
-httpServer.on("listening", function() {
-    const addr = httpServer.address();
-    debug("Listening on " + typeof addr === "string"
-        ? "pipe " + addr
-        : "port " + addr.port);
 });
 
 function normalizePort(val) {

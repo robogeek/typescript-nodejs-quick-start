@@ -1,6 +1,4 @@
 
-<h1>{{title}}</h1>
-
 <form method="POST" action="/registrar/students">
     <div class="container-fluid">
         {{#if docreate}}
@@ -8,7 +6,7 @@
         <input type='hidden' name='id' value="-1">
         {{else}}
         <input type='hidden' name='docreate' value="update">
-        <input type='hidden' name='id' value="id">
+        <input type='hidden' name='id' value="{{id}}">
         {{/if}}
         
         <div class="form-group row">
@@ -16,7 +14,7 @@
         <div class="col">
             <input type="text" class="form-control" 
                 id='name' name='name' placeholder="student name" 
-                value='{{#if student }}{{student.name}}{{/if}}'>
+                value='{{#if student}}{{student.name}}{{/if}}'>
         </div>
         </div>
 
@@ -25,7 +23,7 @@
         <div class="col">
             <input type="text" class="form-control" 
                 id='entered' name='entered' placeholder="YYYY" 
-                value='{{#if student }}{{student.entered}}{{/if}}'>
+                value='{{#if student}}{{student.entered}}{{/if}}'>
         </div>
         </div>
 
@@ -34,7 +32,7 @@
         <div class="col">
             <input type="text" class="form-control" 
                 id='grade' name='grade' placeholder="# 1-4" 
-                value='{{#if student }}{{student.grade}}{{/if}}'>
+                value='{{#if student}}{{student.grade}}{{/if}}'>
         </div>
         </div>
 
@@ -43,12 +41,14 @@
         <div class="col">
             <div class="custom-control custom-radio custom-control-inline">
                 <input type="radio" id="genderMale" 
-                        name="gender" value="male" class="custom-control-input">
+                        name="gender" value="male" class="custom-control-input"
+                        {{#if isMale}}checked{{/if}}>
                 <label class="custom-control-label" for="genderMale">Male</label>
             </div>
             <div class="custom-control custom-radio custom-control-inline">
                 <input type="radio" id="genderFemale" 
-                        name="gender" value="female" class="custom-control-input">
+                        name="gender" value="female" class="custom-control-input"
+                        {{#if isFemale}}checked{{/if}}>
                 <label class="custom-control-label" for="genderFemale">Female</label>
             </div>
         </div>

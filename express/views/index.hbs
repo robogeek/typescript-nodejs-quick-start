@@ -1,11 +1,15 @@
 
-<h1>{{title}}</h1>
-
-{{#each students}}
-<ul>
-    <li><a href="/registrar/students/read?id={{ id }}">{{ name }}</a></li>
-</ul>
-{{/each}}
-
+<div class="container-fluid">
+  <div class="row">
+    <div id="students" class="col-12 btn-group-vertical" role="group">
+      {{#each students}}
+      <a class="btn btn-lg btn-block btn-outline-dark" 
+          href="/registrar/students/read?id={{id}}">
+        {{name}}
+      </a>
+      {{/each}}
+    </div>
+  </div>
+</div>
 
 {{> footerjs}}
