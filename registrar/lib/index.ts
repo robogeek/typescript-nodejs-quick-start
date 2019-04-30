@@ -9,11 +9,13 @@ export class RegistrarDB {
     private _db;
     private _students;
 
-    constructor() {
+    constructor(dbpath: string) {
         this._fdb = new ForerunnerDB();
-        this._db = this._fdb.db("test"),
-        this._db.persist.dataDir(path.join(__dirname, '..', 'registrarDB'));
+        this._db = this._fdb.db("test");
         this._students = new StudentDB(this, "students");
+        this._db.persist.dataDir(dbpath);
+        this._db.load();
+        console.log(`RegistrarDB dbpath ${dbpath}`);
     }
 
     get db() { return this._db; }
