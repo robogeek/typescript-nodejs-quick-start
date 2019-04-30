@@ -61,3 +61,7 @@ typings/
 
 # next.js build output
 .next
+
+express/registrarDB/
+registrar/registrarDB/
+registrar/test/testDB/
