@@ -45,20 +45,23 @@ export class StudentDB {
     }
 
     async student(id: any): Promise<Student> {
+        console.log(`student(${id})`);
         let students = await this.studentTable.find({
-            id: { $eq: id }
+            id: { "$eq": id }
         });
+        console.log(`students ${util.inspect(students)}`);
         if (students.length <= 0) throw new Error(`Did not find student id ${id}`);
         if (students.length > 1) throw new Error(`Found too many students for ${id} - ${util.inspect(students)}`);
         let student = students[0];
-        // console.log(`student ${id} ${util.inspect(student)}`);
+        console.log(`student ${id} ${util.inspect(student)}`);
         return new StudentImpl(student.id,
             student.name, student.entered, student.grade, student.gender);
     }
 
     async delStudent(id: any) {
+        console.log(`delStudent(${id})`);
         await this.studentTable.remove({
-            id: { $eq: id }
+            id: { "$eq": id }
         });
         await this.save();
     }
@@ -71,14 +74,18 @@ export class StudentDB {
             name: s.name, entered: s.entered, grade: s.grade, gender: s.gender
         });
         await this.save();
-        // console.log(`addStudent ${util.inspect(r)}`);
+        console.log(`addStudent ${util.inspect(r)}`);
         return r.inserted[0].id;
     }
 
     async updateStudent(updated: Student) {
         let s = new StudentImpl(
-            undefined, updated.name, updated.entered, updated.grade, updated.gender
+            updated.id, updated.name, updated.entered, updated.grade, updated.gender
         );
+        let toupdate = {
+            name: s.name, entered: s.entered, grade: s.grade, gender: s.gender
+        };
+        console.log(`updateStudent ${updated.id} - ${util.inspect(toupdate)}`);
         await this.studentTable.updateById(updated.id, {
             name: s.name, entered: s.entered, grade: s.grade, gender: s.gender
         });

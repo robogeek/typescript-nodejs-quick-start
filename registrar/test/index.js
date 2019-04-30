@@ -1,11 +1,12 @@
 
 const util = require('util');
+const path = require('path');
 const assert = require('chai').assert;
 const RegistrarDB = require('../dist/index').RegistrarDB;
 
 describe('Initialize Registrar', function() {
     it('should successfully initialize the Registrar', function() {
-        let registrar = new RegistrarDB();
+        let registrar = new RegistrarDB(path.join(__dirname, 'testDB'));
 
         assert.exists(registrar);
         assert.isObject(registrar);
@@ -30,14 +31,14 @@ describe('Add students to empty registry', function() {
     let studentid2;
 
     before(function() {
-        registrar = new RegistrarDB();
+        registrar = new RegistrarDB(path.join(__dirname, 'testDB'));
     });
 
     it('should add a student to the registry', async function() {
         studentid1 = await registrar.students.addStudent(stud1);
         // console.log(`should add got studentid1 ${util.inspect(studentid1)}`);
         let student = await registrar.students.student(studentid1);
-        // console.log(`should add got student ${util.inspect(student)}`);
+        console.log(`should add got studentid1 ${util.inspect(studentid1)} student ${util.inspect(student)}`);
         assert.exists(student);
         assert.isObject(student);
         assert.isString(student.name);
