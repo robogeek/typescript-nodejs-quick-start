@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "watch-ts": "tsc -w",
-    "serve": "node dist/index.js"
+    "serve": "node --experimental-modules ./dist/index.js"
   },
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",

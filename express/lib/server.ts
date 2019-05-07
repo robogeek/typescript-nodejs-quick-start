@@ -4,29 +4,31 @@ import * as cookieParser from "cookie-parser";
 import * as logger from "morgan";
 import * as path from "path";
 import * as hbs from 'hbs';
-import methodOverride = require("method-override");
+import * as methodOverride from 'method-override';
 
-import { RegistrarDB } from "registrar";
-import * as studentController from './controllers/students';
-import * as registrarController from './models/registrar';
+import * as registrar from "registrar";
+import * as studentController from './controllers/students.js';
+
+// import { fileURLToPath } from 'url';
+
+// console.log(import.meta);
+
+// const modulePath = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(modulePath);
 
 export class App {
     public app: express.Application;
-    public registrar: RegistrarDB;
+    public registrar: registrar.RegistrarDB;
   
-    public static bootstrap(): App {
-        return new App();
-    }
-    
     constructor () {
+        // console.log(express);
         this.app = express();
         this.configure();
         this.mountRoutes();
     }
 
     private configure(): void {
-        this.registrar = new RegistrarDB(path.join(__dirname, '..', 'registrarDB'));
-        registrarController.init(this.registrar);
+        this.registrar = new registrar.RegistrarDB(path.join(__dirname, '..', 'registrarDB'));
         this.app.use(express.static(path.join(__dirname, '..', 'public')));
 
         this.app.use('/assets/vendor/bootstrap/css', express.static( 

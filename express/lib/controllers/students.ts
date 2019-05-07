@@ -7,7 +7,7 @@ import {
     addStudent,
     updateStudent,
     destroyStudent
-} from "../models/registrar";
+} from "../models/registrar.js";
 
 export function home(req: Request, res: Response, next: NextFunction) {
     try {

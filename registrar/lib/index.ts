@@ -4,7 +4,7 @@ import * as path from 'path';
 import { StudentDB } from './Student';
 export { Student } from './Student';
 
-export class RegistrarDB {
+export default class RegistrarDB {
     private _fdb : ForerunnerDB;
     private _db;
     private _students;

@@ -1,14 +1,27 @@
 
-const server = require("./server");
-const http = require("http");
+import { default as server } from './server.js';
+import * as http from "http";
 
 const httpPort = normalizePort(process.env.PORT || 8080);
-const app = server.App.bootstrap().app;
+const app = server.app;
 app.set("port", httpPort);
 const httpServer = http.createServer(app);
 httpServer.listen(httpPort);
 
-httpServer.on("error", function(error) {
+// Abstracted from https://nodejs.org/api/errors.html
+interface SystemError {
+    address: string; 
+    code: string; 
+    dest: string;
+    errno: number | string;
+    info: any;
+    message: string;
+    path: string;
+    port: number;
+    syscall: string;
+}
+
+httpServer.on("error", function(error: SystemError) {
     if (error.syscall !== "listen") {
         throw error;
     }

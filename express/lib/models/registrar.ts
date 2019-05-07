@@ -1,31 +1,26 @@
 
 import * as util from 'util';
 import { Student } from 'registrar';
-
-let registrar: any;
-
-export function init(_registrar: any) {
-    registrar = _registrar;
-}
+import { default as App } from '../server';
 
 export function students(): Student[] {
-    return registrar.students.students;
+    return App.registrar.students.students;
 }
 
 export function student(id) : Student {
-    return registrar.students.student(id);
+    return App.registrar.students.student(id);
 }
 
 export async function addStudent(student: Student) {
-    let ret = await registrar.students.addStudent(student);
+    let ret = await App.registrar.students.addStudent(student);
     console.log(`addStudent ${util.inspect(ret)}`);
     return ret;
 }
 
 export async function updateStudent(student: Student) {
-    return await registrar.students.updateStudent(student);
+    return await App.registrar.students.updateStudent(student);
 }
 
 export async function destroyStudent(student: Student) {
-    return await registrar.students.delStudent(student.id);
+    return await App.registrar.students.delStudent(student.id);
 }
