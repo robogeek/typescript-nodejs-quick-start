@@ -9,6 +9,8 @@ import * as methodOverride from 'method-override';
 import * as registrar from "registrar";
 import * as studentController from './controllers/students.js';
 
+import { requireIt } from 'require-it';
+
 // import { fileURLToPath } from 'url';
 
 // console.log(import.meta);
@@ -32,13 +34,13 @@ export class App {
         this.app.use(express.static(path.join(__dirname, '..', 'public')));
 
         this.app.use('/assets/vendor/bootstrap/css', express.static( 
-            path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'css'))); 
+            path.join(requireIt.directory('bootstrap'), 'dist', 'css'))); 
         this.app.use('/assets/vendor/bootstrap/js', express.static( 
-            path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'js'))); 
+            path.join(requireIt.directory('bootstrap'), 'dist', 'js'))); 
         this.app.use('/assets/vendor/jquery', express.static( 
-            path.join(__dirname, '..', 'node_modules', 'jquery', 'dist'))); 
+            path.join(requireIt.directory('jquery'), 'dist'))); 
         this.app.use('/assets/vendor/popper.js', express.static( 
-            path.join(__dirname, '..', 'node_modules', 'popper.js', 'dist')));  
+            path.join(requireIt.directory('popper.js'), 'dist')));  
         
         this.app.set('views', path.join(__dirname, '..', 'views'));
         this.app.set('view engine', 'hbs');
