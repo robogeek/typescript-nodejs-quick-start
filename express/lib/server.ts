@@ -6,7 +6,7 @@ import * as path from "path";
 import * as hbs from 'hbs';
 import * as methodOverride from 'method-override';
 
-import * as registrar from "registrar";
+import { default as RegistrarDB } from "registrar";
 import * as studentController from './controllers/students.js';
 
 import { requireIt } from 'require-it';
@@ -20,7 +20,7 @@ import { requireIt } from 'require-it';
 
 export class App {
     public app: express.Application;
-    public registrar: registrar.RegistrarDB;
+    public registrar: RegistrarDB;
   
     constructor () {
         // console.log(express);
@@ -30,7 +30,7 @@ export class App {
     }
 
     private configure(): void {
-        this.registrar = new registrar.RegistrarDB(path.join(__dirname, '..', 'registrarDB'));
+        this.registrar = new RegistrarDB(path.join(__dirname, '..', 'registrarDB'));
         this.app.use(express.static(path.join(__dirname, '..', 'public')));
 
         this.app.use('/assets/vendor/bootstrap/css', express.static( 

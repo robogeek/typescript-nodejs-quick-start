@@ -39,6 +39,7 @@ export async function createUpdateStudent(req: Request, res: Response, next: Nex
         let studentid;
         if (req.body.docreate === "create") {
             let stud = {
+                id: undefined,
                 name: req.body.name,
                 entered: req.body.entered,
                 grade: req.body.grade,

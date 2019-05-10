@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Database persistence for university registrar",
   "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "prepublish": "npm run build",

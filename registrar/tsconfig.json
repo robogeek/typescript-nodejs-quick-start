@@ -7,6 +7,10 @@
         "module": "commonjs",
         "moduleResolution": "Node",
         "outDir": "./dist",
-        "rootDir": "./lib"
+        "rootDir": "./lib",
+        "declaration": true,
+        "declarationMap": true,
+        "inlineSourceMap": true,
+        "inlineSources": true
     }
 }

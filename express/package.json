@@ -20,7 +20,8 @@
     "method-override": "^3.0.0",
     "morgan": "^1.9.1",
     "popper.js": "^1.14.7",
-    "registrar": "file:../registrar"
+    "registrar": "file:../registrar",
+    "require-it": "^2.0.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.1",
