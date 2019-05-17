@@ -5,8 +5,7 @@
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "prepublish": "npm run build",
+    "build": "rm -rf build && tsc",
     "test": "cd test && npm run test"
   },
   "author": "David Herron <david@davidherron.com>",
@@ -17,6 +16,8 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
-    "forerunnerdb": "^2.0.22"
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^4.0.7",
+    "typeorm": "^0.2.17"
   }
 }
