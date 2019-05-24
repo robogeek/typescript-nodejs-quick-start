@@ -1,9 +1,67 @@
+import * as express from 'express';
+import * as bodyParser from "body-parser";
+import * as cookieParser from "cookie-parser";
+import * as logger from "morgan";
+import * as util from 'util';
+import * as path from "path";
+import * as hbs from 'hbs';
+import * as methodOverride from 'method-override';
 
-import { default as server } from './server.js';
+import { requireIt } from 'require-it';
+
 import * as http from "http";
 
+import { default as RegistrarDB } from "registrar";
+import * as studentController from './controllers/students.js';
+
+const app = express();
+
+const registrar = new RegistrarDB();
+registrar.init(path.join(__dirname, '..', 'registrardb.sqlite'))
+.catch(err => {
+    console.error(err);
+    process.exit(1);
+});
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.use('/assets/vendor/bootstrap/css', express.static( 
+    path.join(requireIt.directory('bootstrap'), 'dist', 'css'))); 
+app.use('/assets/vendor/bootstrap/js', express.static( 
+    path.join(requireIt.directory('bootstrap'), 'dist', 'js'))); 
+app.use('/assets/vendor/jquery', express.static( 
+    path.join(requireIt.directory('jquery'), 'dist'))); 
+app.use('/assets/vendor/popper.js', express.static( 
+    path.join(requireIt.directory('popper.js'), 'dist')));  
+
+app.set('views', path.join(__dirname, '..', 'views'));
+app.set('view engine', 'hbs');
+hbs.registerPartials(path.join(__dirname, '..', 'partials'));
+
+app.use(logger("dev"));
+
+app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(cookieParser('keyboard mouse'));
+app.use(methodOverride());
+
+
+const router = express.Router();
+router.get('/', studentController.home);
+router.get('/registrar/students/create', studentController.create);
+router.post('/registrar/students', studentController.createUpdateStudent);
+router.get('/registrar/students/read', studentController.read);
+router.get('/registrar/students/update', studentController.update);
+router.get('/registrar/students/destroy', studentController.destroy);
+router.post('/registrar/students/destroy/confirm', studentController.dodestroy);
+app.use('/', router);
+
+
 const httpPort = normalizePort(process.env.PORT || 8080);
-const app = server.app;
 app.set("port", httpPort);
 const httpServer = http.createServer(app);
 httpServer.listen(httpPort);
@@ -44,6 +102,14 @@ httpServer.on("error", function(error: SystemError) {
     }
 });
 
+process.on('uncaughtException', function(err) { 
+    console.error("I've crashed - uncaughtException - "+ (err.stack || err)); 
+  }); 
+  
+  process.on('unhandledRejection', (reason, p) => {
+    console.error(`Unhandled Rejection at: ${util.inspect(p)} reason: ${reason}`);
+  });
+  
 function normalizePort(val) {
     const port = parseInt(val, 10);
     if (isNaN(port)) { return val; }
