@@ -1,25 +1,34 @@
-
-import * as ForerunnerDB from 'forerunnerdb';
-import * as path from 'path';
-import { StudentDB } from './Student';
-export { Student } from './Student';
+import "reflect-metadata";
+import { createConnection, getConnection } from "typeorm";
+import { Student } from './entities/Student';
+import { OfferedClass } from './entities/Class';
 
 export default class RegistrarDB {
-    private _fdb : ForerunnerDB;
-    private _db;
-    private _students;
 
-    constructor(dbpath: string) {
-        this._fdb = new ForerunnerDB();
-        this._db = this._fdb.db("test");
-        this._students = new StudentDB(this, "students");
-        this._db.persist.dataDir(dbpath);
-        this._db.load();
-        console.log(`RegistrarDB dbpath ${dbpath}`);
+    constructor() {
     }
 
-    get db() { return this._db; }
-    get fdb() { return this._fdb; }
-    get students() { return this._students; }
+    async init(databaseFN: string) {
+        await createConnection({
+            type: "sqlite",
+            database: databaseFN,
+            synchronize: true,
+            logging: false,
+            entities: [
+                Student, OfferedClass
+            ]
+         });
+    }
+
+    async close() {
+        let conn = getConnection();
+        if (conn) await conn.close();
+    }
+
+    async drop() {
+        let conn = getConnection();
+        await conn.dropDatabase();
+    }
+
 }
 

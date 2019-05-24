@@ -5,13 +5,13 @@ import {
     students as allStudents,
     student as getStudent,
     addStudent,
-    updateStudent,
+    doUpdateStudent,
     destroyStudent
 } from "../models/registrar.js";
 
-export function home(req: Request, res: Response, next: NextFunction) {
+export async function home(req: Request, res: Response, next: NextFunction) {
     try {
-        let students = allStudents();
+        let students = await allStudents();
         console.log(`controllers home ${util.inspect(students)}`);
         res.render('index', { title: 'Students', students });
     } catch(err) {
@@ -56,7 +56,7 @@ export async function createUpdateStudent(req: Request, res: Response, next: Nex
                 gender: req.body.gender
             };
             console.log(`createUpdateStudent UPDATE ${util.inspect(stud)}`);
-            studentid = await updateStudent(stud);
+            studentid = await doUpdateStudent(stud);
         }
         res.redirect(`/registrar/students/read?id=${studentid}`);
     } catch(err) {

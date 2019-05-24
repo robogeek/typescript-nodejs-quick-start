@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "pretest": "cd .. && npm run build",
-        "test": "mocha ./index"
+        "test": "rm -f registrardb.sqlite && mocha ./index"
     },
     "author": "David Herron <david@davidherron.com>",
     "license": "ISC",
