@@ -5,7 +5,7 @@ import * as util from 'util';
 
 export function studentRepository() { return getRepository(Student); }
 
-export async function createStudent(student: Student): Promise<any> {
+export async function createStudent(student: Student): Promise<number> {
     let stud = new Student();
     stud.name = student.name;
     stud.entered = normalizeNumber(student.entered, 'Bad year entered');
@@ -23,15 +23,21 @@ export async function allStudents(): Promise<Student []> {
     return students;
 }
 
-export async function getStudent(id: any): Promise<Student> {
-    let student = await studentRepository().findOne({ where: { id: id }});
+export async function getStudent(id: number): Promise<Student> {
+
+    let sr = studentRepository();
+    let student = await sr.findOne({ 
+        where: { id: id },
+        relations: [ "classes" ]
+    });
+    // console.log(`getStudent ${util.inspect(id)} ==> ${util.inspect(student)}`);
     if (!isStudent(student)) {
         throw new Error(`Student id ${util.inspect(id)} did not retrieve a Student`);
     }
     return student;
 }
 
-export async function updateStudent(id: any, student: Student): Promise<any> {
+export async function updateStudent(id: number, student: Student): Promise<number> {
     if (typeof student.entered !== 'undefined') {
         student.entered = normalizeNumber(student.entered, 'Bad year entered');
     }
@@ -93,7 +99,7 @@ export function isStudentUpdater(updater: any): boolean {
 }
 
 
-function normalizeNumber(num: number | string, errorIfNotNumber: string): number {
+export function normalizeNumber(num: number | string, errorIfNotNumber: string): number {
     if (typeof num === 'undefined') {
         throw new Error(`${errorIfNotNumber} -- ${num}`);
     }

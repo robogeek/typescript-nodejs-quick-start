@@ -14,6 +14,16 @@ const {
     isStudentUpdater
 } = require('../dist/Students');
 const { Student } = require('../dist/entities/Student');
+const {
+    allClasses,
+    createOfferedClass,
+    updateClasses,
+    getOfferedClass,
+    updateOfferedClass,
+    deleteOfferedClass,
+    isOfferedClass,
+    enrollStudentInClass
+} = require('../dist/Classes');
 const { getManager, getRepository } = require("typeorm");
 
 var registrar;
@@ -96,6 +106,7 @@ describe('Update student in registry', function() {
             gender: "female"
         });
         let student = await getStudent(studentid1);
+        // console.log(`update student ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
 
         assert.exists(student);
         assert.isObject(student);
@@ -124,6 +135,8 @@ describe('Update student in registry', function() {
         assert.isTrue(caughtError);
 
         let student = await getStudent(studentid1);
+        // console.log(`fail to update student ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
+
 
         assert.exists(student);
         assert.isObject(student);
@@ -172,6 +185,125 @@ describe('Delete student from registry', function() {
         } catch (e) {
             caughtError = true;
         }
+        // console.log(`delete student using good ID ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
+
         assert.isTrue(caughtError);
     });
+});
+
+describe('Initialize Offered Classes in registry', function() {
+    before(async function() {
+        await updateClasses(path.join(__dirname, 'classes.yaml'));
+    });
+
+    it('should have offered classes', async function() {
+        let classes = await allClasses();
+        assert.exists(classes);
+        assert.isArray(classes);
+        for (let offered of classes) {
+            assert.isTrue(isOfferedClass(offered));
+        }
+    });
+
+
+    let stud1 = {
+        name: "Mary Brown", 
+        entered: 2010, grade: 2,
+        gender: "female"
+    };
+    let studentid1;
+
+    it('should add student to a class', async function() {
+        studentid1 = await createStudent(stud1);
+        // console.log(`should add got studentid1 ${util.inspect(studentid1)}`);
+
+        await enrollStudentInClass(studentid1, "BW102");
+
+        let student = await getStudent(studentid1);
+        // console.log(`should add got studentid1 ${util.inspect(studentid1)} student ${util.inspect(student)}`);
+
+        assert.isTrue(isStudent(student));
+        // console.log(`student ${studentid1} classes ${util.inspect(student.classes)}`);
+        assert.isArray(student.classes);
+        let foundbw102 = false;
+        for (let offered of student.classes) {
+            assert.isTrue(isOfferedClass(offered));
+            if (offered.code === "BW102") foundbw102 = true;
+        }
+        assert.isTrue(foundbw102);
+    });
+
+    let stud2 = {
+        name: "Vicky Brown", 
+        entered: 2005, grade: 12,
+        gender: "female"
+    };
+    let studentid2;
+
+    it('should add student to three classes', async function() {
+        studentid2 = await createStudent(stud2);
+        // console.log(`should add got studentid1 ${util.inspect(studentid2)}`);
+
+        await enrollStudentInClass(studentid2, "BW102");
+        await enrollStudentInClass(studentid2, "BW201");
+        await enrollStudentInClass(studentid2, "BW203");
+
+        let student = await getStudent(studentid2);
+        // console.log(`should add got studentid ${util.inspect(studentid2)} student ${util.inspect(student)}`);
+
+        assert.isTrue(isStudent(student));
+        // console.log(`student ${studentid2} classes ${util.inspect(student.classes)}`);
+        assert.isArray(student.classes);
+        let foundbw102 = false;
+        let foundbw201 = false;
+        let foundbw203 = false;
+        for (let offered of student.classes) {
+            assert.isTrue(isOfferedClass(offered));
+            if (offered.code === "BW102") foundbw102 = true;
+            if (offered.code === "BW201") foundbw201 = true;
+            if (offered.code === "BW203") foundbw203 = true;
+        }
+        assert.isTrue(foundbw102);
+        assert.isTrue(foundbw201);
+        assert.isTrue(foundbw203);
+    });
+
+    it('should show students registered in class', async function() {
+        let classbw102 = await getOfferedClass("BW102");
+        assert.isTrue(isOfferedClass(classbw102));
+        let foundstudentid2 = false;
+        let foundstudentid1 = false;
+        for (let student of classbw102.students) {
+            assert.isTrue(isStudent(student));
+            if (student.id === studentid2) foundstudentid2 = true;
+            if (student.id === studentid1) foundstudentid1 = true;
+        }
+        assert.isTrue(foundstudentid2);
+        assert.isTrue(foundstudentid1);
+
+        let classbw201 = await getOfferedClass("BW201");
+        assert.isTrue(isOfferedClass(classbw201));
+        foundstudentid2 = false;
+        foundstudentid1 = false;
+        for (let student of classbw201.students) {
+            assert.isTrue(isStudent(student));
+            if (student.id === studentid2) foundstudentid2 = true;
+            if (student.id === studentid1) foundstudentid1 = true;
+        }
+        assert.isTrue(foundstudentid2);
+        assert.isFalse(foundstudentid1);
+
+        let classbw203 = await getOfferedClass("BW203");
+        assert.isTrue(isOfferedClass(classbw203));
+        foundstudentid2 = false;
+        foundstudentid1 = false;
+        for (let student of classbw203.students) {
+            assert.isTrue(isStudent(student));
+            if (student.id === studentid2) foundstudentid2 = true;
+            if (student.id === studentid1) foundstudentid1 = true;
+        }
+        assert.isTrue(foundstudentid2);
+        assert.isFalse(foundstudentid1);
+    });
+
 });

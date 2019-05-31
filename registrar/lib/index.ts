@@ -1,7 +1,7 @@
 import "reflect-metadata";
-import { createConnection, getConnection } from "typeorm";
+import { createConnection } from "typeorm";
 import { Student } from './entities/Student';
-import { OfferedClass } from './entities/Class';
+import { OfferedClass } from './entities/OfferedClass';
 
 export default class RegistrarDB {
 
@@ -18,16 +18,6 @@ export default class RegistrarDB {
                 Student, OfferedClass
             ]
          });
-    }
-
-    async close() {
-        let conn = getConnection();
-        if (conn) await conn.close();
-    }
-
-    async drop() {
-        let conn = getConnection();
-        await conn.dropDatabase();
     }
 
 }

@@ -1,0 +1,34 @@
+classes:
+  - code: BW101
+    name: Introduction to Basket Weaving
+    hours: 3
+  - code: BW102
+    name: Underwater Basket Weaving
+    hours: 3
+  - code: BW103
+    name: Basket Weaving while Sky Diving
+    hours: 3
+  - code: BW201
+    name: Basket Weaving Fundamentals
+    hours: 3
+  - code: BW202
+    name: Historical Basket Weaving
+    hours: 3
+  - code: BW203
+    name: Development of Modern Basket Weaving
+    hours: 3
+  - code: BW301
+    name: Topics on Contemporary Basket Weaving
+    hours: 3
+  - code: BW302
+    name: Basket Weaving Theory
+    hours: 3
+  - code: BW303
+    name: Basket Weaving and Graph Theory
+    hours: 3
+  - code: BW401
+    name: Advanced Basket Weaving
+    hours: 3
+  - code: BW402
+    name: Basket Weaving Research Practicum
+    hours: 3
