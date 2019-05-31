@@ -14,12 +14,15 @@ export async function createStudent(student: Student): Promise<number> {
     if (!isStudent(stud)) {
         throw new Error(`Supplied student object not a Student ${util.inspect(student)}`);
     }
-    await studentRepository().save(stud);
+    let sr = studentRepository();
+    await sr.save(stud);
     return stud.id;
 }
 
 export async function allStudents(): Promise<Student []> {
-    let students = await studentRepository().find();
+    let students = await studentRepository().find({
+        relations: [ "classes" ]
+    });
     return students;
 }
 

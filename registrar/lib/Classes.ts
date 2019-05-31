@@ -16,12 +16,16 @@ export async function createOfferedClass(offeredClass: OfferedClass): Promise<an
     if (!isOfferedClass(cls)) {
         throw new Error(`Not an offered class ${util.inspect(offeredClass)}`);
     }
-    await offeredClassRepository().save(cls);
+    let or = offeredClassRepository();
+    await or.save(cls);
     return cls.code;
 }
 
 export async function allClasses(): Promise<OfferedClass []> {
-    let classes = await offeredClassRepository().find();
+    let or = offeredClassRepository();
+    let classes = await or.find({
+        relations: [ "students" ]
+    });
     return classes;
 }
 
