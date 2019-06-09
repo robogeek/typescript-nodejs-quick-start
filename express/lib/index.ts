@@ -12,12 +12,19 @@ import { requireIt } from 'require-it';
 import * as http from "http";
 
 import { default as RegistrarDB } from "registrar";
+import { updateClasses } from "registrar/dist/Classes";
 import * as studentController from './controllers/students.js';
+import * as classesController from './controllers/classes.js';
 
 const app = express();
 
+// Initialize the database
 const registrar = new RegistrarDB();
 registrar.init(path.join(__dirname, '..', 'registrardb.sqlite'))
+.then(() => {
+    // Update the classes list
+    return updateClasses(path.join(__dirname, '..', 'classes.yaml'));
+})
 .catch(err => {
     console.error(err);
     process.exit(1);
@@ -52,6 +59,8 @@ app.use(methodOverride());
 
 const router = express.Router();
 router.get('/', studentController.home);
+router.get('/classes/list', classesController.home);
+router.get('/classes/read', classesController.read);
 router.get('/registrar/students/create', studentController.create);
 router.post('/registrar/students', studentController.createUpdateStudent);
 router.get('/registrar/students/read', studentController.read);
