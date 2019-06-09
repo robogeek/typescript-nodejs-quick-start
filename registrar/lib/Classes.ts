@@ -1,7 +1,12 @@
 
 import { getManager, getRepository } from "typeorm";
 import { OfferedClass } from './entities/OfferedClass';
-import { studentRepository, getStudent, normalizeNumber, isStudent } from './Students';
+import {
+    getStudent,
+    updateStudent, 
+    normalizeNumber,
+    isStudent 
+} from './Students';
 import * as util from 'util';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
@@ -73,8 +78,37 @@ export async function enrollStudentInClass(studentid: any, code: string) {
     
     if (!student.classes) student.classes = [];
     student.classes.push(offered);
-    let sr = studentRepository();
-    await sr.save(student);
+    await getManager().save(student);
+}
+
+export async function updateStudentEnrolledClasses(studentid: any, codes: string[]) {
+    let student = await getStudent(studentid);
+    // console.log(`updateStudentEnrolledClasses studentid ${util.inspect(studentid)} codes ${util.inspect(codes)} ==> student ${util.inspect(student)}`);
+    if (!isStudent(student)) {
+        throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
+    }
+    let newclasses = [];
+    for (let sclazz of student.classes) {
+        for (let code of codes) {
+            if (sclazz.code === code) {
+                newclasses.push(sclazz);
+            }
+        }
+    }
+    for (let code of codes) {
+        let found = false;
+        for (let nclazz of newclasses) {
+            if (nclazz.code === code) {
+                found = true;
+            }
+        }
+        if (!found) {
+            newclasses.push(await getOfferedClass(code));
+        }
+    }
+    student.classes = newclasses;
+    // console.log(`updateStudentEnrolledClasses updating student studentid ${util.inspect(studentid)} codes ${util.inspect(codes)} ==> student ${util.inspect(student)}`);
+    await getManager().save(student);
 }
 
 export async function updateClasses(classFN: string) {

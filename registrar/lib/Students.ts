@@ -20,7 +20,8 @@ export async function createStudent(student: Student): Promise<number> {
 }
 
 export async function allStudents(): Promise<Student []> {
-    let students = await studentRepository().find({
+    let sr = studentRepository();
+    let students = await sr.find({
         relations: [ "classes" ]
     });
     return students;
