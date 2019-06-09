@@ -49,30 +49,30 @@ import * as util from 'util';
         relations: [ "students" ]
     }));
 
-    const loadStudentClasses = async (offered) => {
+    const loadClass = async (code) => {
+        let offered = await classRepository.findOne({
+            where: { code: code },
+            relations: [ "students" ]
+        });
         for (let student of offered.students) {
             let connection = getConnection();
             student.classes = await connection
                 .createQueryBuilder()
+                .relation(Student, "petType")
+                .relation(Student, "photos")
+                .relation(Student, "categories")
                 .relation(Student, "classes")
                 .of(student)
                 .loadMany();
         }
         return offered;
-    };
+    }
 
-    let offered = await classRepository.findOne({
-        where: { code: "BW101" },
-        relations: [ "students" ]
-    });
-    offered = await loadStudentClasses(offered);
+    let offered = await loadClass("BW101");
     console.log(util.inspect(offered));
     console.log(util.inspect(offered.students));
-    offered = await classRepository.findOne({
-        where: { code: "BW102" },
-        relations: [ "students" ]
-    });
-    offered = await loadStudentClasses(offered);
+    
+    offered = await loadClass("BW102");
     console.log(util.inspect(offered));
     console.log(util.inspect(offered.students));
 
