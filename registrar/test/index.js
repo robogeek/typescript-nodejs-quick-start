@@ -22,7 +22,8 @@ const {
     updateOfferedClass,
     deleteOfferedClass,
     isOfferedClass,
-    enrollStudentInClass
+    enrollStudentInClass,
+    updateStudentEnrolledClasses
 } = require('../dist/Classes');
 const { getManager, getRepository } = require("typeorm");
 
@@ -306,4 +307,28 @@ describe('Initialize Offered Classes in registry', function() {
         assert.isFalse(foundstudentid1);
     });
 
+
+    it('should show enroll student in bulk classes', async function() {
+        let student = await getStudent(studentid2);
+        assert.isTrue(isStudent(student));
+        // let oldclasses = student.classes;
+        // console.log(oldclasses);
+        await updateStudentEnrolledClasses(student.id, [
+            "BW401", "BW303"
+        ]);
+        let studentUpdated = await getStudent(studentid2);
+        // console.log(studentUpdated);
+
+        let foundbw303 = false;
+        let foundbw401 = false;
+        for (let clazz of studentUpdated.classes) {
+            if (clazz.code === "BW401") foundbw401 = true;
+            else if (clazz.code === "BW303") foundbw303 = true;
+            else {
+                assert.fail(`class with code ${clazz.code} found`);
+            }
+        }
+        assert.isTrue(foundbw303);
+        assert.isTrue(foundbw401);
+    });
 });
