@@ -7,7 +7,12 @@ import {
     addStudent,
     doUpdateStudent,
     destroyStudent
-} from "../models/registrar.js";
+} from '../models/registrar.js';
+import {
+    classesForStudent,
+    updateStudentEnrolledClasses
+} from '../models/classes';
+import { Student } from 'registrar/dist/entities/Student';
 
 export async function home(req: Request, res: Response, next: NextFunction) {
     try {
@@ -20,13 +25,14 @@ export async function home(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export function create(req: Request, res: Response, next: NextFunction) {
+export async function create(req: Request, res: Response, next: NextFunction) {
     try {
         res.render('studentedit', {
             title: 'Add Student',
             docreate: true,
             id: -1,
-            student: undefined
+            student: undefined,
+            classes: await classesForStudent(undefined)
         });
     } catch(err) {
         console.error(`student create ERROR ${err.stack}`);
@@ -36,28 +42,22 @@ export function create(req: Request, res: Response, next: NextFunction) {
 
 export async function createUpdateStudent(req: Request, res: Response, next: NextFunction) {
     try {
+        console.log(`createUpdateStudent ${util.inspect(req.body)}`);
         let studentid;
+        let stud = new Student();
+        stud.name = req.body.name;
+        stud.entered = req.body.entered;
+        stud.grade = req.body.grade;
+        stud.gender = req.body.gender;
         if (req.body.docreate === "create") {
-            let stud = {
-                id: undefined,
-                name: req.body.name,
-                entered: req.body.entered,
-                grade: req.body.grade,
-                gender: req.body.gender
-            };
             console.log(`createUpdateStudent CREATE ${util.inspect(stud)}`);
             studentid = await addStudent(stud);
         } else {
-            let stud = {
-                id: req.body.id,
-                name: req.body.name,
-                entered: req.body.entered,
-                grade: req.body.grade,
-                gender: req.body.gender
-            };
+            stud.id = req.body.id;
             console.log(`createUpdateStudent UPDATE ${util.inspect(stud)}`);
             studentid = await doUpdateStudent(stud);
         }
+        await updateStudentEnrolledClasses(studentid, req.body['enrolled-class']);
         res.redirect(`/registrar/students/read?id=${studentid}`);
     } catch(err) {
         console.error(`student createUpdateStudent ERROR ${err.stack}`);
@@ -83,7 +83,7 @@ export async function read(req: Request, res: Response, next: NextFunction) {
 
 export async function update(req: Request, res: Response, next: NextFunction) {
     try {
-        console.log(req.query);
+        console.log(`update req.query ${util.inspect(req.query)}`);
         let student = await getStudent(req.query.id);
         console.log(`update ${req.query.id} => ${util.inspect(student)}`);
         res.render('studentedit', {
@@ -92,7 +92,8 @@ export async function update(req: Request, res: Response, next: NextFunction) {
             id: student.id,
             isMale: student.gender === "male" ? true : false,
             isFemale: student.gender === "female" ? true : false,
-            student
+            student,
+            classes: await classesForStudent(student)
         });
     } catch(err) {
         console.error(`student update ERROR ${err.stack}`);
