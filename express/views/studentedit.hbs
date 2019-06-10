@@ -59,15 +59,6 @@
         <label for="grade"  class="col-2 col-form-label">Enrolled-In</label>
         <div class="col">
             <div class="form-check">
-                <!-- <button type="button" 
-                    class="btn btn-primary" 
-                    data-toggle="button" 
-                    aria-pressed="{{isEnrolled}}" 
-                    autocomplete="off"
-                    id="enrolled-class-{{code}}"
-                    name="enrolled-class-{{code}}">
-                    {{code}} {{name}}
-                </button> -->
                 {{#if isEnrolled}}
                 <input class="form-check-input" 
                     type="checkbox" 
@@ -96,16 +87,3 @@
 </form>
 
 {{> footerjs}}
-
-<script>
-    // $(function () {
-    //     $('input.form-check-input').on('click', function() {
-    //         try {
-    //             $(this).prop('checked', !$(this).is(':checked'));
-    //             $(this).triggerHandler('change');
-    //         } catch (e) {
-    //             console.error(`input.form-check-input click failed`, e);
-    //         }
-    //     })
-    // })
-</script>
