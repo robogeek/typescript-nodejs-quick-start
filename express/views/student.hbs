@@ -17,6 +17,12 @@
             <th>Gender</th>
             <td>{{student.gender}}</td>
         </tr>
+        {{#each student.classes}}
+        <tr>
+            <th>Enrolled-In</th>
+            <td><a href="/classes/read?code={{code}}">{{name}}</a> ({{hours}} hours))</td>
+        </tr>
+        {{/each}}
     </table>
 
     <div class="row"><div class="col-xs-12">

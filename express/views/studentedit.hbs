@@ -10,7 +10,7 @@
         {{/if}}
         
         <div class="form-group row">
-        <label for="name"  class="col-1 col-form-label">Name</label>
+        <label for="name"  class="col-2 col-form-label">Name</label>
         <div class="col">
             <input type="text" class="form-control" 
                 id='name' name='name' placeholder="student name" 
@@ -19,7 +19,7 @@
         </div>
 
         <div class="form-group row">
-        <label for="entered"  class="col-1 col-form-label">Year Entered</label>
+        <label for="entered"  class="col-2 col-form-label">Year Entered</label>
         <div class="col">
             <input type="text" class="form-control" 
                 id='entered' name='entered' placeholder="YYYY" 
@@ -28,7 +28,7 @@
         </div>
 
         <div class="form-group row">
-        <label for="grade"  class="col-1 col-form-label">Grade</label>
+        <label for="grade"  class="col-2 col-form-label">Grade</label>
         <div class="col">
             <input type="text" class="form-control" 
                 id='grade' name='grade' placeholder="# 1-4" 
@@ -37,7 +37,7 @@
         </div>
 
         <div class="form-group row">
-        <label for="gender" class="col-1 col-form-label">Gender</label>
+        <label for="gender" class="col-2 col-form-label">Gender</label>
         <div class="col">
             <div class="custom-control custom-radio custom-control-inline">
                 <input type="radio" id="genderMale" 
@@ -54,10 +54,36 @@
         </div>
         </div>
 
-        <button type="submit" class="btn btn-default">Submit</button>
+        {{#each classes}}
+        <div class="form-group row">
+        <label for="grade"  class="col-2 col-form-label">Enrolled-In</label>
+        <div class="col">
+            <div class="form-check">
+                {{#if isEnrolled}}
+                <input class="form-check-input" 
+                    type="checkbox" 
+                    value="{{code}}" checked
+                    id="enrolled-class-{{code}}"
+                    name="enrolled-class[]">
+                {{else}}
+                <input class="form-check-input" 
+                    type="checkbox" 
+                    value="{{code}}" 
+                    id="enrolled-class-{{code}}"
+                    name="enrolled-class[]">
+                {{/if}}
+                <label class="form-check-label" 
+                    for="enrolled-class-{{code}}">
+                        {{code}} {{name}}
+                </label>
+            </div>
+        </div>
+        </div>
+        {{/each}}
+
+        <button type="submit" class="btn btn-outline-dark">Submit</button>
 
     </div>
 </form>
 
 {{> footerjs}}
-

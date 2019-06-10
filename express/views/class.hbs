@@ -1,0 +1,26 @@
+
+<div class="container-fluid">
+    <table class="row">
+        <tr>
+            <th>Code</th>
+            <td>{{class.code}}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{class.name}}</td>
+        </tr>
+        <tr>
+            <th>Hours</th>
+            <td>{{class.hours}}</td>
+        </tr>
+        {{#each class.students}}
+        <tr>
+            <th>Enrolled-Student</th>
+            <td><a href="/registrar/students/read?id={{id}}">{{name}}</a></td>
+        </tr>
+        {{/each}}
+    </table>
+</div>
+
+{{> footerjs}}
+
