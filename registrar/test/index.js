@@ -2,19 +2,16 @@
 const util = require('util');
 const path = require('path');
 const assert = require('chai').assert;
-const RegistrarDB = require('../dist/index').default;
 const { 
-    studentRepository,
-    createStudent,
-    getStudent,
-    updateStudent,
-    deleteStudent,
-    isGender,
-    isStudent,
-    isStudentUpdater
-} = require('../dist/Students');
-const { Student } = require('../dist/entities/Student');
-const {
+    connect, 
+    connected,
+    Student,
+    getStudentRepository,
+    StudentRepository,
+    getOfferedClassRepository,
+    OfferedClassRepository
+} = require('../dist/index');
+/* const {
     allClasses,
     createOfferedClass,
     updateClasses,
@@ -24,23 +21,21 @@ const {
     isOfferedClass,
     enrollStudentInClass,
     updateStudentEnrolledClasses
-} = require('../dist/Classes');
+} = require('../dist/Classes'); */
 const { getManager, getRepository } = require("typeorm");
-
-var registrar;
 
 describe('Initialize Registrar', function() {
     before(async function() {
-        registrar = new RegistrarDB();
-        await registrar.init("registrardb.sqlite");
+        try {
+            await connect("registrardb.sqlite");
+        } catch (e) {
+            console.error(`Initialize Registrar failed with `, e);
+            throw e;
+        }
     });
 
     it('should successfully initialize the Registrar', async function() {
-
-        assert.exists(registrar);
-        assert.isObject(registrar);
-        // assert.isObject(registrar.db);
-        // assert.isObject(registrar.students);
+        assert.isTrue(connected());
     });
 });
 
@@ -59,9 +54,9 @@ describe('Add students to registry', function() {
     let studentid2;
 
     it('should add a student to the registry', async function() {
-        studentid1 = await createStudent(stud1);
+        studentid1 = await getStudentRepository().createAndSave(stud1);
         // console.log(`should add got studentid1 ${util.inspect(studentid1)}`);
-        let student = await getStudent(studentid1);
+        let student = await getStudentRepository().findOneStudent(studentid1);
         // console.log(`should add got studentid1 ${util.inspect(studentid1)} student ${util.inspect(student)}`);
         assert.exists(student);
         assert.isObject(student);
@@ -78,7 +73,7 @@ describe('Add students to registry', function() {
     it('should fail to add a student with bad data', async function() {
         let sawError = false;
         try {
-            await createStudent(stud2);
+            await getStudentRepository().createAndSave(stud2);
         } catch (err) {
             // console.log(`should fail caught ${err.message}`);
             sawError = true;
@@ -98,15 +93,15 @@ describe('Update student in registry', function() {
     let studentid1;
 
     before(async function() {
-        studentid1 = await createStudent(stud1);
+        studentid1 = await getStudentRepository().createAndSave(stud1);
     });
 
 
     it('should update student', async function() {
-        await updateStudent(studentid1, {
+        await getStudentRepository().updateStudent(studentid1, {
             gender: "female"
         });
-        let student = await getStudent(studentid1);
+        let student = await getStudentRepository().findOneStudent(studentid1);
         // console.log(`update student ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
 
         assert.exists(student);
@@ -120,13 +115,13 @@ describe('Update student in registry', function() {
         assert.isString(student.gender);
         assert.equal(student.gender, "female");
 
-        assert.isTrue(isStudent(student));
+        assert.isTrue(StudentRepository.isStudent(student));
     });
 
     it('should fail to update student with bad data', async function() {
         let caughtError = false;
         try {
-            await updateStudent(studentid1, {
+            await getStudentRepository().updateStudent(studentid1, {
                 entered: "female"
             });
         } catch (e) {
@@ -135,7 +130,7 @@ describe('Update student in registry', function() {
         }
         assert.isTrue(caughtError);
 
-        let student = await getStudent(studentid1);
+        let student = await getStudentRepository().findOneStudent(studentid1);
         // console.log(`fail to update student ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
 
 
@@ -162,14 +157,14 @@ describe('Delete student from registry', function() {
     let studentid1;
 
     before(async function() {
-        studentid1 = await createStudent(stud1);
+        studentid1 = await getStudentRepository().createAndSave(stud1);
     });
 
     it('should not fail to delete student using bad ID', async function() {
 
         let caughtError = false;
         try {
-            await deleteStudent(9999999999);
+            await getStudentRepository().deleteStudent(9999999999);
         } catch (e) {
             // console.log(e);
             caughtError = true;
@@ -178,11 +173,11 @@ describe('Delete student from registry', function() {
     });
 
     it('should delete student using good ID', async function() {
-        await deleteStudent(studentid1);
+        await getStudentRepository().deleteStudent(studentid1);
         let student;
         let caughtError = false;
         try {
-            student = await getStudent(studentid1);
+            student = await getStudentRepository().findOneStudent(studentid1);
         } catch (e) {
             caughtError = true;
         }
@@ -194,15 +189,15 @@ describe('Delete student from registry', function() {
 
 describe('Initialize Offered Classes in registry', function() {
     before(async function() {
-        await updateClasses(path.join(__dirname, 'classes.yaml'));
+        await getOfferedClassRepository().updateClasses(path.join(__dirname, 'classes.yaml'));
     });
 
     it('should have offered classes', async function() {
-        let classes = await allClasses();
+        let classes = await getOfferedClassRepository().allClasses();
         assert.exists(classes);
         assert.isArray(classes);
         for (let offered of classes) {
-            assert.isTrue(isOfferedClass(offered));
+            assert.isTrue(OfferedClassRepository.isOfferedClass(offered));
         }
     });
 
@@ -215,20 +210,20 @@ describe('Initialize Offered Classes in registry', function() {
     let studentid1;
 
     it('should add student to a class', async function() {
-        studentid1 = await createStudent(stud1);
+        studentid1 = await getStudentRepository().createAndSave(stud1);
         // console.log(`should add got studentid1 ${util.inspect(studentid1)}`);
 
-        await enrollStudentInClass(studentid1, "BW102");
+        await getOfferedClassRepository().enrollStudentInClass(studentid1, "BW102");
 
-        let student = await getStudent(studentid1);
+        let student = await getStudentRepository().findOneStudent(studentid1);
         // console.log(`should add got studentid1 ${util.inspect(studentid1)} student ${util.inspect(student)}`);
 
-        assert.isTrue(isStudent(student));
+        assert.isTrue(StudentRepository.isStudent(student));
         // console.log(`student ${studentid1} classes ${util.inspect(student.classes)}`);
         assert.isArray(student.classes);
         let foundbw102 = false;
         for (let offered of student.classes) {
-            assert.isTrue(isOfferedClass(offered));
+            assert.isTrue(OfferedClassRepository.isOfferedClass(offered));
             if (offered.code === "BW102") foundbw102 = true;
         }
         assert.isTrue(foundbw102);
@@ -242,24 +237,24 @@ describe('Initialize Offered Classes in registry', function() {
     let studentid2;
 
     it('should add student to three classes', async function() {
-        studentid2 = await createStudent(stud2);
+        studentid2 = await getStudentRepository().createAndSave(stud2);
         // console.log(`should add got studentid1 ${util.inspect(studentid2)}`);
 
-        await enrollStudentInClass(studentid2, "BW102");
-        await enrollStudentInClass(studentid2, "BW201");
-        await enrollStudentInClass(studentid2, "BW203");
+        await getOfferedClassRepository().enrollStudentInClass(studentid2, "BW102");
+        await getOfferedClassRepository().enrollStudentInClass(studentid2, "BW201");
+        await getOfferedClassRepository().enrollStudentInClass(studentid2, "BW203");
 
-        let student = await getStudent(studentid2);
+        let student = await getStudentRepository().findOneStudent(studentid2);
         // console.log(`should add got studentid ${util.inspect(studentid2)} student ${util.inspect(student)}`);
 
-        assert.isTrue(isStudent(student));
+        assert.isTrue(StudentRepository.isStudent(student));
         // console.log(`student ${studentid2} classes ${util.inspect(student.classes)}`);
         assert.isArray(student.classes);
         let foundbw102 = false;
         let foundbw201 = false;
         let foundbw203 = false;
         for (let offered of student.classes) {
-            assert.isTrue(isOfferedClass(offered));
+            assert.isTrue(OfferedClassRepository.isOfferedClass(offered));
             if (offered.code === "BW102") foundbw102 = true;
             if (offered.code === "BW201") foundbw201 = true;
             if (offered.code === "BW203") foundbw203 = true;
@@ -270,36 +265,36 @@ describe('Initialize Offered Classes in registry', function() {
     });
 
     it('should show students registered in class', async function() {
-        let classbw102 = await getOfferedClass("BW102");
-        assert.isTrue(isOfferedClass(classbw102));
+        let classbw102 = await getOfferedClassRepository().findOneClass("BW102");
+        assert.isTrue(OfferedClassRepository.isOfferedClass(classbw102));
         let foundstudentid2 = false;
         let foundstudentid1 = false;
         for (let student of classbw102.students) {
-            assert.isTrue(isStudent(student));
+            assert.isTrue(StudentRepository.isStudent(student));
             if (student.id === studentid2) foundstudentid2 = true;
             if (student.id === studentid1) foundstudentid1 = true;
         }
         assert.isTrue(foundstudentid2);
         assert.isTrue(foundstudentid1);
 
-        let classbw201 = await getOfferedClass("BW201");
-        assert.isTrue(isOfferedClass(classbw201));
+        let classbw201 = await getOfferedClassRepository().findOneClass("BW201");
+        assert.isTrue(OfferedClassRepository.isOfferedClass(classbw201));
         foundstudentid2 = false;
         foundstudentid1 = false;
         for (let student of classbw201.students) {
-            assert.isTrue(isStudent(student));
+            assert.isTrue(StudentRepository.isStudent(student));
             if (student.id === studentid2) foundstudentid2 = true;
             if (student.id === studentid1) foundstudentid1 = true;
         }
         assert.isTrue(foundstudentid2);
         assert.isFalse(foundstudentid1);
 
-        let classbw203 = await getOfferedClass("BW203");
-        assert.isTrue(isOfferedClass(classbw203));
+        let classbw203 = await getOfferedClassRepository().findOneClass("BW203");
+        assert.isTrue(OfferedClassRepository.isOfferedClass(classbw203));
         foundstudentid2 = false;
         foundstudentid1 = false;
         for (let student of classbw203.students) {
-            assert.isTrue(isStudent(student));
+            assert.isTrue(StudentRepository.isStudent(student));
             if (student.id === studentid2) foundstudentid2 = true;
             if (student.id === studentid1) foundstudentid1 = true;
         }
@@ -309,14 +304,14 @@ describe('Initialize Offered Classes in registry', function() {
 
 
     it('should show enroll student in bulk classes', async function() {
-        let student = await getStudent(studentid2);
-        assert.isTrue(isStudent(student));
+        let student = await getStudentRepository().findOneStudent(studentid2);
+        assert.isTrue(StudentRepository.isStudent(student));
         // let oldclasses = student.classes;
         // console.log(oldclasses);
-        await updateStudentEnrolledClasses(student.id, [
+        await getOfferedClassRepository().updateStudentEnrolledClasses(student.id, [
             "BW401", "BW303"
         ]);
-        let studentUpdated = await getStudent(studentid2);
+        let studentUpdated = await getStudentRepository().findOneStudent(studentid2);
         // console.log(studentUpdated);
 
         let foundbw303 = false;
