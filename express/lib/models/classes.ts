@@ -1,23 +1,21 @@
 
 import * as util from 'util';
-import { Student } from 'registrar/dist/entities/Student';
-import { OfferedClass } from "registrar/dist/entities/OfferedClass";
-import {
-    allClasses,
-    getOfferedClass as _getOfferedClass,
-    updateStudentEnrolledClasses as _updateStudentEnrolledClasses
-} from 'registrar/dist/Classes';
+import { 
+    Student,
+    OfferedClass,
+    getOfferedClassRepository
+} from 'registrar';
 
 export async function classes(): Promise<OfferedClass[]> {
-    return allClasses();
+    return getOfferedClassRepository().allClasses();
 }
 
 export async function getOfferedClass(code: string) : Promise<OfferedClass> {
-    return await _getOfferedClass(code);
+    return await getOfferedClassRepository().findOneClass(code);
 }
 
 export async function classesForStudent(student: Student): Promise<OfferedClass[]> {
-    let classes = await allClasses();
+    let classes = await getOfferedClassRepository().allClasses();
     let ret = [];
     for (let clazz of classes) {
         let isEnrolled = false;
@@ -43,8 +41,7 @@ export async function classesForStudent(student: Student): Promise<OfferedClass[
     return ret;
 }
 
-
 export async function updateStudentEnrolledClasses(studentid: any, codes: string[]): Promise<any> {
-    return await _updateStudentEnrolledClasses(studentid, codes);
+    return await getOfferedClassRepository().updateStudentEnrolledClasses(studentid, codes);
 }
 

@@ -11,18 +11,6 @@ const {
     getOfferedClassRepository,
     OfferedClassRepository
 } = require('../dist/index');
-/* const {
-    allClasses,
-    createOfferedClass,
-    updateClasses,
-    getOfferedClass,
-    updateOfferedClass,
-    deleteOfferedClass,
-    isOfferedClass,
-    enrollStudentInClass,
-    updateStudentEnrolledClasses
-} = require('../dist/Classes'); */
-const { getManager, getRepository } = require("typeorm");
 
 describe('Initialize Registrar', function() {
     before(async function() {

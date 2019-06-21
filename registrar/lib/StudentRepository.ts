@@ -17,9 +17,6 @@ export class StudentRepository extends Repository<Student> {
         stud.entered = normalizeNumber(student.entered, 'Bad year entered');
         stud.grade = normalizeNumber(student.grade, 'Bad grade');
         stud.gender = student.gender;
-        if (!StudentRepository.isStudent(stud)) {
-            throw new Error(`Supplied student object not a Student ${util.inspect(student)}`);
-        }
         await this.save(stud);
         return stud.id;
     }

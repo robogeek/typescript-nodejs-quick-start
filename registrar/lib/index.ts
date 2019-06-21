@@ -7,6 +7,7 @@ export { StudentRepository } from './StudentRepository';
 import { OfferedClassRepository } from './OfferedClassRepository';
 export { OfferedClassRepository } from './OfferedClassRepository';
 import { OfferedClass } from './entities/OfferedClass';
+export { OfferedClass } from './entities/OfferedClass';
 
 var  _connection: Connection;
 

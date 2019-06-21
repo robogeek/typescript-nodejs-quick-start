@@ -11,8 +11,7 @@ import { requireIt } from 'require-it';
 
 import * as http from "http";
 
-import { default as RegistrarDB } from "registrar";
-import { updateClasses } from "registrar/dist/Classes";
+import { connect, getOfferedClassRepository } from "registrar";
 import * as studentController from './controllers/students.js';
 import * as classesController from './controllers/classes.js';
 
@@ -22,10 +21,9 @@ import * as classesController from './controllers/classes.js';
 const app = express();
 
 // Initialize the database
-const registrar = new RegistrarDB();
-await registrar.init(path.join(__dirname, '..', 'registrardb.sqlite'));
+await connect(path.join(__dirname, '..', 'registrardb.sqlite'));
 // Update the classes list
-await updateClasses(path.join(__dirname, '..', 'classes.yaml'));
+await getOfferedClassRepository().updateClasses(path.join(__dirname, '..', 'classes.yaml'));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
