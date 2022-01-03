@@ -4,14 +4,13 @@
     "description": "Test suite for student registry library",
     "main": "index.js",
     "scripts": {
-        "pretest": "cd .. && npm run build",
-        "test": "rm -f registrardb.sqlite && mocha ./index"
+        "setup": "cd .. && npm run build",
+        "test": "rm -f registrardb.sqlite && mocha ./index.mjs"
     },
     "author": "David Herron <david@davidherron.com>",
     "license": "ISC",
-    "devDependencies": {
-        "chai": "^4.2.0",
-        "mocha": "^6.1.4"
-    },
-    "dependencies": {}
+    "dependencies": {
+        "chai": "^4.3.4",
+        "mocha": "^9.1.3"
+    }
 }

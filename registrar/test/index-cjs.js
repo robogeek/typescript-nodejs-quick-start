@@ -2,19 +2,32 @@
 const util = require('util');
 const path = require('path');
 const assert = require('chai').assert;
-const { 
+var 
     connect, 
     connected,
     Student,
     getStudentRepository,
     StudentRepository,
     getOfferedClassRepository,
-    OfferedClassRepository
-} = require('../dist/index');
+    OfferedClassRepository;
+
+var Registrar;
+const _registrar = import('../dist/index.js');
+
+
 
 describe('Initialize Registrar', function() {
     before(async function() {
         try {
+            Registrar = await _registrar;
+            connect = Registrar.connect; 
+            connected = Registrar.connected;
+            Student = Registrar.Student;
+            getStudentRepository = Registrar.getStudentRepository;
+            StudentRepository = Registrar.StudentRepository;
+            getOfferedClassRepository = Registrar.getOfferedClassRepository;
+            OfferedClassRepository = Registrar.OfferedClassRepository;
+
             await connect("registrardb.sqlite");
         } catch (e) {
             console.error(`Initialize Registrar failed with `, e);
@@ -35,7 +48,7 @@ describe('Add students to registry', function() {
     };
     let stud2 = {
         name: "John Brown", 
-        entered: "trump1", grade: "senior",
+        entered: "badyear", grade: "senior",
         gender: "male"
     };
     let studentid1;
