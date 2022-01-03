@@ -4,6 +4,7 @@
   "description": "Database persistence for university registrar",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
+  "type": "commonjs",
   "scripts": {
     "build": "rm -rf build && tsc",
     "test": "cd test && npm run test"
@@ -11,16 +12,14 @@
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
   "devDependencies": {
-    "@types/js-yaml": "^3.12.1",
-    "@types/node": "^10.12.0",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.4.5"
+    "@types/js-yaml": "^4.x",
+    "@types/node": "^16.x",
+    "typescript": "^4.5.x"
   },
   "dependencies": {
-    "fs-extra": "^8.0.1",
-    "js-yaml": "^3.13.1",
-    "reflect-metadata": "^0.1.13",
-    "sqlite3": "^4.0.7",
-    "typeorm": "^0.2.17"
+    "js-yaml": "^4.1.x",
+    "reflect-metadata": "^0.1.x",
+    "sqlite3": "^5.x",
+    "typeorm": "^0.2.x"
   }
 }
