@@ -1,12 +1,12 @@
 
-import { 
-    Entity, 
-    Column, 
-    PrimaryGeneratedColumn, 
-    ManyToMany, 
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToMany,
     JoinTable
 } from "typeorm";
-import { OfferedClass } from './OfferedClass';
+import { OfferedClass } from './OfferedClass.js';
 
 @Entity()
 export class Student {
@@ -23,4 +23,3 @@ export class Student {
     classes: OfferedClass[];
 
 }
-

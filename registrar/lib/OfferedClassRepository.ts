@@ -1,11 +1,14 @@
-import { EntityRepository, Repository, getRepository } from "typeorm";
-import { OfferedClass } from './entities/OfferedClass';
-import { normalizeNumber, StudentRepository } from './StudentRepository';
-import { getStudentRepository } from './index';
+import { EntityRepository, Repository } from "typeorm";
+import { OfferedClass } from './entities/OfferedClass.js';
+import { normalizeNumber, StudentRepository } from './StudentRepository.js';
+import { getStudentRepository } from './index.js';
 import * as util from 'util';
 import * as yaml from 'js-yaml';
-import * as fs from 'fs-extra';
+import { promises as fs, read } from 'fs';
 
+class OfferedClassYAML {
+    classes: Array<OfferedClass>;
+}
 
 @EntityRepository(OfferedClass)
 export class OfferedClassRepository extends Repository<OfferedClass> {
@@ -34,6 +37,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
             where: { code: code },
             relations: [ "students" ]
         });
+        // console.log(`findOneClass ${code} `, cls);
         if (!OfferedClassRepository.isOfferedClass(cls)) {
             throw new Error(`OfferedClass id ${util.inspect(code)} did not retrieve a OfferedClass`);
         }
@@ -109,11 +113,16 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     async updateClasses(classFN: string) {
 
         const yamlText = await fs.readFile(classFN, 'utf8');
-        const offered = yaml.safeLoad(yamlText);
+        const offered = (yaml.load(yamlText, {
+            filename: classFN
+        }) as OfferedClassYAML);
     
-        if (typeof offered !== 'object' || !Array.isArray(offered.classes)) {
+        if (typeof offered !== 'object' 
+         || !Array.isArray(offered.classes)) {
             throw new Error(`updateClasses read incorrect data file from ${classFN}`);
         }
+
+        // console.log(offered);
     
         let all = await this.allClasses();
         for (let cls of all) {
@@ -140,7 +149,6 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
                 await this.createAndSave(updater)
             }
         }
-        
     }
 
 

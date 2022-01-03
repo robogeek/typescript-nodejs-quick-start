@@ -1,5 +1,5 @@
-import { EntityRepository, Repository, getRepository } from "typeorm";
-import { Student } from "./entities/Student";
+import { EntityRepository, Repository } from "typeorm";
+import { Student } from "./entities/Student.js";
 import * as util from 'util';
 
 export type GenderType = "male" | "female";

@@ -1,11 +1,11 @@
-import { 
-    Entity, 
-    Column, 
-    PrimaryColumn, 
-    OneToMany,
+import "reflect-metadata";
+import {
+    Entity,
+    Column,
+    PrimaryColumn,
     ManyToMany
 } from "typeorm";
-import { Student } from './Student';
+import { Student } from './Student.js';
 
 @Entity()
 export class OfferedClass {
