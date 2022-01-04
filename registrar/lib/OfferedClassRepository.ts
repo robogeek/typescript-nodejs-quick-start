@@ -13,7 +13,7 @@ class OfferedClassYAML {
 @EntityRepository(OfferedClass)
 export class OfferedClassRepository extends Repository<OfferedClass> {
 
-    async createAndSave(offeredClass: OfferedClass): Promise<any> {
+    async createAndSave(offeredClass: OfferedClass): Promise<string> {
         let cls = new OfferedClass();
         cls.code = offeredClass.code;
         cls.name = offeredClass.name;
@@ -44,7 +44,10 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return cls;
     }
 
-    async updateOfferedClass(code: string, offeredClass: OfferedClass): Promise<any> {
+    async updateOfferedClass(
+                code: string,
+                offeredClass: OfferedClass
+            ): Promise<string> {
         if (typeof offeredClass.hours !== 'undefined') {
             offeredClass.hours = normalizeNumber(offeredClass.hours, 'Bad number of hours');
         }
@@ -55,7 +58,9 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return code;
     }
 
-    async deleteOfferedClass(offeredClass: string | OfferedClass) {
+    async deleteOfferedClass(
+                offeredClass: string | OfferedClass
+                ): Promise<void> {
         if (typeof offeredClass !== 'string' && !OfferedClassRepository.isOfferedClass(offeredClass)) {
             throw new Error('Supplied offeredClass object not a OfferedClass');
         }
@@ -65,7 +70,9 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
                     ? offeredClass : offeredClass.code);
     }
 
-    async enrollStudentInClass(studentid: any, code: string) {
+    async enrollStudentInClass(
+                studentid: any, code: string
+                ): Promise<void> {
         let offered = await this.findOneClass(code);
         if (!OfferedClassRepository.isOfferedClass(offered)) {
             throw new Error(`enrollStudentInClass did not find OfferedClass for ${util.inspect(code)}`);
@@ -80,7 +87,9 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         await getStudentRepository().manager.save(student);
     }
 
-    async updateStudentEnrolledClasses(studentid: any, codes: string[]) {
+    async updateStudentEnrolledClasses(
+                studentid: any, codes: string[]
+                ): Promise<void> {
         let student = await getStudentRepository().findOneStudent(studentid);
         // console.log(`updateStudentEnrolledClasses studentid ${util.inspect(studentid)} codes ${util.inspect(codes)} ==> student ${util.inspect(student)}`);
         if (!StudentRepository.isStudent(student)) {
@@ -110,7 +119,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         await getStudentRepository().save(student);
     }
 
-    async updateClasses(classFN: string) {
+    async updateClasses(classFN: string): Promise<void> {
 
         const yamlText = await fs.readFile(classFN, 'utf8');
         const offered = (yaml.load(yamlText, {

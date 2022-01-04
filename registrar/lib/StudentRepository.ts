@@ -16,6 +16,9 @@ export class StudentRepository extends Repository<Student> {
         stud.name = student.name;
         stud.entered = normalizeNumber(student.entered, 'Bad year entered');
         stud.grade = normalizeNumber(student.grade, 'Bad grade');
+        if (!StudentRepository.isGender(student.gender)) {
+            throw new Error(`Unknown gender ${student.gender}`);
+        }
         stud.gender = student.gender;
         await this.save(stud);
         return stud.id;
@@ -46,6 +49,10 @@ export class StudentRepository extends Repository<Student> {
         }
         if (typeof student.grade !== 'undefined') {
             student.grade = normalizeNumber(student.grade, 'Bad grade');
+        }
+        if (typeof student.gender !== 'undefined'
+         && !StudentRepository.isGender(student.gender)) {
+            throw new Error(`Unknown gender ${student.gender}`);
         }
         if (!StudentRepository.isStudentUpdater(student)) {
             throw new Error(`Student update id ${util.inspect(id)} did not receive a Student updater ${util.inspect(student)}`);
