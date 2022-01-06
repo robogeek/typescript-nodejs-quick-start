@@ -24,7 +24,9 @@ export class StudentRepository extends Repository<Student> {
             throw new Error(`Unknown gender ${student.gender}`);
         }
         stud.gender = student.gender;
-        await validateOrReject(stud);
+        // The validation is now handled by
+        // the @BeforeInsert and @BeforeUpdate decorators
+        // await validateOrReject(stud);
         await this.save(stud);
         return stud.id;
     }

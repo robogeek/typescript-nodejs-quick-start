@@ -24,7 +24,9 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         if (!OfferedClassRepository.isOfferedClass(cls)) {
             throw new Error(`Not an offered class ${util.inspect(offeredClass)}`);
         }
-        await validateOrReject(cls);
+        // The validation is now handled by
+        // the @BeforeInsert and @BeforeUpdate decorators
+        // await validateOrReject(cls);
         await this.save(cls);
         return cls.code;
     }

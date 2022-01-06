@@ -4,10 +4,13 @@ import {
     Column,
     PrimaryGeneratedColumn,
     ManyToMany,
-    JoinTable
+    JoinTable,
+    BeforeInsert,
+    BeforeUpdate
 } from "typeorm";
 
 import {
+    validateOrReject,
     ValidatorConstraint,
     ValidatorConstraintInterface,
     IsInt,
@@ -72,6 +75,15 @@ export class Student {
     @JoinTable()
     classes: OfferedClass[];
 
+    @BeforeInsert()
+    async validateInsert() {
+        await validateOrReject(this);
+    }
+
+    @BeforeUpdate()
+    async validateUpdate() {
+        await validateOrReject(this);
+    }
 }
 
 export class StudentUpdater {

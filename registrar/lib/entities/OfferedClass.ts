@@ -3,10 +3,13 @@ import {
     Entity,
     Column,
     PrimaryColumn,
-    ManyToMany
+    ManyToMany,
+    BeforeInsert,
+    BeforeUpdate
 } from "typeorm";
 
 import {
+    validateOrReject,
     IsInt,
     IsOptional,
     Matches,
@@ -45,6 +48,16 @@ export class OfferedClass {
 
     @ManyToMany(type => Student, student => student.classes)
     students: Student[];
+
+    @BeforeInsert()
+    async validateInsert() {
+        await validateOrReject(this);
+    }
+
+    @BeforeUpdate()
+    async validateUpdate() {
+        await validateOrReject(this);
+    }
 }
 
 export class OfferedClassUpdater {
