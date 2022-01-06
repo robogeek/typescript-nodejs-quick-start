@@ -1,0 +1,8 @@
+default:
+    type: "sqlite"
+    database: "registrardb2.sqlite"
+    synchronize: true
+    logging: false
+    entities: [
+        '**/entities/*.js'
+    ]

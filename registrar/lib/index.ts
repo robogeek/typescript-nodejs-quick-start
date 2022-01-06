@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { createConnection, Connection } from "typeorm";
+import { createConnection, getConnectionOptions, Connection } from "typeorm";
 
 // These module references purposely do not have file extensions
 // so we can demonstrate a difference between using CommonJS
@@ -18,26 +18,30 @@ export { OfferedClassRepository } from './OfferedClassRepository';
 import { OfferedClass } from './entities/OfferedClass';
 export { OfferedClass } from './entities/OfferedClass';
 
-var  _connection: Connection;
+export var connection: Connection;
 
 export async function connect(databaseFN: string) {
-    _connection = await createConnection({
-        type: "sqlite",
-        database: databaseFN,
-        synchronize: true,
-        logging: false,
+    // _connection = await createConnection({
+    //     ... hard-coded connection object
+    // });
+    /* const connectionOptions = await getConnectionOptions();
+    Object.assign(connectionOptions, {
         entities: [
             Student, OfferedClass
-        ]
-     });
+        ]});
+    connection = await createConnection(connectionOptions); */
+    connection = await createConnection();
 }
 
-export function connected() { return typeof _connection !== 'undefined'; }
+export function connected() {
+    return typeof connection !== 'undefined'
+        && connection.isConnected;
+}
 
 export function getStudentRepository(): StudentRepository {
-    return _connection.getCustomRepository(StudentRepository);
+    return connection.getCustomRepository(StudentRepository);
 }
 
 export function getOfferedClassRepository(): OfferedClassRepository {
-    return _connection.getCustomRepository(OfferedClassRepository);
+    return connection.getCustomRepository(OfferedClassRepository);
 }
