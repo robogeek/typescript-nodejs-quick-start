@@ -11,16 +11,27 @@ import {
     OfferedClassRepository
 } from '../dist/index.js';
 
+import {
+    validate,
+} from 'class-validator';
+
 import * as path from 'path';
 import * as url from 'url';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import { env } from 'process';
+
+env.TYPEORM_CONNECTION  = 'sqlite';
+env.TYPEORM_DATABASE    = path.join(__dirname, 'registrardb.sqlite');
+env.TYPEORM_SYNCHRONIZE = true;
+env.TYPEORM_LOGGING     = false;
+env.TYPEORM_ENTITIES    = '../**/entities/*.js';
+
 describe('Initialize Registrar', function() {
     before(async function() {
         try {
-
             await connect("registrardb.sqlite");
         } catch (e) {
             console.error(`Initialize Registrar failed with `, e);
@@ -39,13 +50,37 @@ describe('Add students to registry', function() {
         entered: 1997, grade: 4,
         gender: "male"
     };
-    let stud2 = {
-        name: "John Brown", 
+    let stud_bad_years = {
+        name: "John Brown",
         entered: "badyear", grade: "senior",
         gender: "male"
     };
+    let stud_bad_name = {
+        name: "John Br0wn",
+        entered: 1999, grade: 3,
+        gender: "male"
+    };
+    let stud_low_year = {
+        name: "John Brown",
+        entered: 999, grade: 3,
+        gender: "male"
+    };
+    let stud_high_year = {
+        name: "John Brown",
+        entered: 2999, grade: 3,
+        gender: "male"
+    };
+    let stud_low_grade = {
+        name: "John Brown",
+        entered: 1999, grade: 0,
+        gender: "male"
+    };
+    let stud_high_grade = {
+        name: "John Brown",
+        entered: 1999, grade: 33,
+        gender: "male"
+    };
     let studentid1;
-    let studentid2;
 
     it('should add a student to the registry', async function() {
         studentid1 = await getStudentRepository().createAndSave(stud1);
@@ -67,13 +102,84 @@ describe('Add students to registry', function() {
     it('should fail to add a student with bad data', async function() {
         let sawError = false;
         try {
-            await getStudentRepository().createAndSave(stud2);
+            await getStudentRepository().createAndSave(stud_bad_years);
         } catch (err) {
             // console.log(`should fail caught ${err.message}`);
             sawError = true;
         }
         assert.isTrue(sawError);
     });
+
+    it('should fail to construct student with bad name', async function() {
+        const stud = new Student();
+        stud.name = stud_bad_name.name;
+        stud.entered = stud_bad_name.entered;
+        stud.grade = stud_bad_name.grade;
+        stud.gender = stud_bad_name.gender;
+        // console.log(stud);
+        const errors = await validate(stud);
+        // console.log(errors);
+        assert.isAtLeast(errors.length, 1);
+    });
+
+    it('should fail to add a student with bad name', async function() {
+        let sawError = false;
+        try {
+            await getStudentRepository().createAndSave(stud_bad_name);
+        } catch (err) {
+            // console.log(`should fail caught ${err.message}`);
+            sawError = true;
+        }
+        assert.isTrue(sawError);
+    });
+
+    it('should fail to add a student with year prior to 1900', async function() {
+        let sawError = false;
+        try {
+            await getStudentRepository().createAndSave(stud_low_year);
+        } catch (err) {
+            // console.log(`should fail caught ${err.message}`);
+            sawError = true;
+        }
+        assert.isTrue(sawError);
+    });
+
+    it('should fail to add a student with grade after 2040', async function() {
+        let sawError = false;
+        try {
+            await getStudentRepository().createAndSave(stud_high_year);
+        } catch (err) {
+            // console.log(`should fail caught ${err.message}`);
+            sawError = true;
+        }
+        assert.isTrue(sawError);
+    });
+
+    it('should fail to add a student with grade prior to 1', async function() {
+        let sawError = false;
+        try {
+            await getStudentRepository().createAndSave(stud_low_grade);
+        } catch (err) {
+            // console.log(`should fail caught ${err.message}`);
+            sawError = true;
+        }
+        assert.isTrue(sawError);
+    });
+
+    it('should fail to add a student with grade after 8', async function() {
+        let sawError = false;
+        try {
+            await getStudentRepository().createAndSave(stud_high_grade);
+        } catch (err) {
+            // console.log(`should fail caught ${err.message}`);
+            sawError = true;
+        }
+        assert.isTrue(sawError);
+    });
+
+    /* after(async function() {
+        console.log(await getStudentRepository().findAll());
+    }); */
 
 });
 
@@ -124,9 +230,63 @@ describe('Update student in registry', function() {
         }
         assert.isTrue(caughtError);
 
+        caughtError = false;
+        try {
+            await getStudentRepository().updateStudent(studentid1, {
+                entered: 999
+            });
+        } catch (e) {
+            // console.log(e);
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
+
+        caughtError = false;
+        try {
+            await getStudentRepository().updateStudent(studentid1, {
+                entered: 2999
+            });
+        } catch (e) {
+            // console.log(e);
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
+
+        caughtError = false;
+        try {
+            await getStudentRepository().updateStudent(studentid1, {
+                grade: 0
+            });
+        } catch (e) {
+            // console.log(e);
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
+
+        caughtError = false;
+        try {
+            await getStudentRepository().updateStudent(studentid1, {
+                grade: 9
+            });
+        } catch (e) {
+            // console.log(e);
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
+
+        caughtError = false;
+        try {
+            await getStudentRepository().updateStudent(studentid1, {
+                gender: "gorky"
+            });
+        } catch (e) {
+            // console.log(e);
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
+
         let student = await getStudentRepository().findOneStudent(studentid1);
         // console.log(`fail to update student ${util.inspect(studentid1)} ==> ${util.inspect(student)}`);
-
 
         assert.exists(student);
         assert.isObject(student);
@@ -196,6 +356,78 @@ describe('Initialize Offered Classes in registry', function() {
         }
     });
 
+    it('should fail to add class with bad code', async function() {
+        let caughtError = false;
+        try {
+            await getOfferedClassRepository().createAndSave({
+                code: 'BADCODE',
+                name: 'Class with bad name',
+                hours: 3
+            });
+        } catch (e) {
+            caughtError = true;
+        }
+
+        assert.isTrue(caughtError);
+    });
+
+    it('should fail to add class with bad name', async function() {
+        let caughtError = false;
+        try {
+            await getOfferedClassRepository().createAndSave({
+                code: 'CD111',
+                name: 'Class 11 with bad name',
+                hours: 3
+            });
+        } catch (e) {
+            caughtError = true;
+        }
+
+        assert.isTrue(caughtError);
+    });
+
+    it('should fail to add class with bad hours', async function() {
+        let caughtError = false;
+        try {
+            await getOfferedClassRepository().createAndSave({
+                code: 'CD111',
+                name: 'Class with good name but bad hours',
+                hours: 'three'
+            });
+        } catch (e) {
+            caughtError = true;
+        }
+
+        assert.isTrue(caughtError);
+    });
+
+    it('should fail to update class with bad name', async function() {
+        let caughtError = false;
+        try {
+            await getOfferedClassRepository()
+            .updateOfferedClass('BW101', {
+                name: 'Name with 1111 numbers is bad'
+            });
+        } catch (e) {
+            caughtError = true;
+        }
+
+        assert.isTrue(caughtError);
+    });
+
+    it('should fail to update class with bad hours', async function() {
+        let caughtError = false;
+        try {
+            await getOfferedClassRepository()
+            .updateOfferedClass('BW101', {
+                hours: 'three'
+            });
+        } catch (e) {
+            caughtError = true;
+        }
+
+        assert.isTrue(caughtError);
+    });
 
     let stud1 = {
         name: "Mary Brown", 
@@ -226,7 +458,7 @@ describe('Initialize Offered Classes in registry', function() {
 
     let stud2 = {
         name: "Vicky Brown", 
-        entered: 2005, grade: 12,
+        entered: 2005, grade: 8,
         gender: "female"
     };
     let studentid2;

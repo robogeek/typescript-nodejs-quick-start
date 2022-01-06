@@ -1,6 +1,10 @@
 import { EntityRepository, Repository } from "typeorm";
-import { Student } from "./entities/Student.js";
+import { Student, StudentUpdater } from "./entities/Student.js";
 import * as util from 'util';
+
+import {
+    validateOrReject
+} from 'class-validator';
 
 export type GenderType = "male" | "female";
 
@@ -20,6 +24,7 @@ export class StudentRepository extends Repository<Student> {
             throw new Error(`Unknown gender ${student.gender}`);
         }
         stud.gender = student.gender;
+        await validateOrReject(stud);
         await this.save(stud);
         return stud.id;
     }
@@ -44,23 +49,28 @@ export class StudentRepository extends Repository<Student> {
     }
 
     async updateStudent(id: number, student: Student): Promise<number> {
+        let updater = new StudentUpdater();
         if (typeof student.entered !== 'undefined') {
-            student.entered = normalizeNumber(student.entered, 'Bad year entered');
+            updater.entered = normalizeNumber(student.entered, 'Bad year entered');
         }
         if (typeof student.grade !== 'undefined') {
-            student.grade = normalizeNumber(student.grade, 'Bad grade');
+            updater.grade = normalizeNumber(student.grade, 'Bad grade');
         }
         if (typeof student.gender !== 'undefined'
          && !StudentRepository.isGender(student.gender)) {
             throw new Error(`Unknown gender ${student.gender}`);
+        } else if (typeof student.gender !== 'undefined') {
+            updater.gender = student.gender;
         }
         if (!StudentRepository.isStudentUpdater(student)) {
             throw new Error(`Student update id ${util.inspect(id)} did not receive a Student updater ${util.inspect(student)}`);
         }
-        await this.manager.update(Student, id, student);
+        // console.log(`updateStudent `, updater);
+        await validateOrReject(updater);
+        await this.manager.update(Student, id, updater);
         return id;
     }
-    
+
     async deleteStudent(student: number | Student) {
         if (typeof student !== 'number' && !StudentRepository.isStudent(student)) {
             throw new Error('Supplied student object not a Student');
@@ -68,7 +78,6 @@ export class StudentRepository extends Repository<Student> {
         // console.log(`deleteStudent ${typeof student === 'number' ? student : student.id}`);
         await this.manager.delete(Student, typeof student === 'number' ? student : student.id);
     }
-
 
     static isStudent(student: any): student is Student {
         return typeof student === 'object'

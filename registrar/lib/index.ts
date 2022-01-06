@@ -31,6 +31,7 @@ export async function connect(databaseFN: string) {
         ]});
     connection = await createConnection(connectionOptions); */
     connection = await createConnection();
+    // console.log(connection.options);
 }
 
 export function connected() {

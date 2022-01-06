@@ -1,5 +1,8 @@
 import { EntityRepository, Repository } from "typeorm";
-import { OfferedClass } from './entities/OfferedClass.js';
+import {
+    validateOrReject
+} from 'class-validator';
+import { OfferedClass, OfferedClassUpdater } from './entities/OfferedClass.js';
 import { normalizeNumber, StudentRepository } from './StudentRepository.js';
 import { getStudentRepository } from './index.js';
 import * as util from 'util';
@@ -21,6 +24,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         if (!OfferedClassRepository.isOfferedClass(cls)) {
             throw new Error(`Not an offered class ${util.inspect(offeredClass)}`);
         }
+        await validateOrReject(cls);
         await this.save(cls);
         return cls.code;
     }
@@ -48,13 +52,18 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
                 code: string,
                 offeredClass: OfferedClass
             ): Promise<string> {
+        const updater = new OfferedClassUpdater();
         if (typeof offeredClass.hours !== 'undefined') {
-            offeredClass.hours = normalizeNumber(offeredClass.hours, 'Bad number of hours');
+            updater.hours = normalizeNumber(offeredClass.hours, 'Bad number of hours');
+        }
+        if (typeof offeredClass.name !== 'undefined') {
+            updater.name = offeredClass.name;
         }
         if (!OfferedClassRepository.isOfferedClassUpdater(offeredClass)) {
             throw new Error(`OfferedClass update id ${util.inspect(code)} did not receive a OfferedClass updater ${util.inspect(offeredClass)}`);
         }
-        await this.manager.update(OfferedClass, code, offeredClass);
+        await validateOrReject(updater);
+        await this.manager.update(OfferedClass, code, updater);
         return code;
     }
 
@@ -150,6 +159,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
             if (!OfferedClassRepository.isOfferedClassUpdater(updater)) {
                 throw new Error(`updateClasses found classes entry that is not an OfferedClassUpdater ${util.inspect(updater)}`);
             }
+            await validateOrReject(updater);
             let cls;
             try { cls = await this.findOneClass(updater.code); } catch (e) { cls = undefined }
             if (cls) {
