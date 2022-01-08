@@ -20,23 +20,38 @@ export { OfferedClass } from './entities/OfferedClass';
 
 export var connection: Connection;
 
-export async function connect(databaseFN: string) {
+export async function connect() {
+    // One option is this... to pass in a hard-coded configuration
     // _connection = await createConnection({
     //     ... hard-coded connection object
     // });
-    /* const connectionOptions = await getConnectionOptions();
+
+    // The next option is to read the configuration from
+    // the environment or an ormconfig file, and then
+    // to insert the entities configuration.
+    const connectionOptions = await getConnectionOptions();
     Object.assign(connectionOptions, {
         entities: [
             Student, OfferedClass
         ]});
-    connection = await createConnection(connectionOptions); */
-    connection = await createConnection();
+    connection = await createConnection(connectionOptions);
+
+    // The last option is to solely rely on a
+    // configuration read from the environment
+    // or from an ormconfig file.
+    // connection = await createConnection();
+
+    // For inspecting the configuration
     // console.log(connection.options);
 }
 
 export function connected() {
     return typeof connection !== 'undefined'
         && connection.isConnected;
+}
+
+export function connectionOptions() {
+    return connection.options;
 }
 
 export function getStudentRepository(): StudentRepository {

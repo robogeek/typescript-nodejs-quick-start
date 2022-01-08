@@ -4,6 +4,7 @@ import { assert } from 'chai';
 import {
     connect, 
     connected,
+    connectionOptions,
     Student,
     getStudentRepository,
     StudentRepository,
@@ -27,12 +28,12 @@ env.TYPEORM_CONNECTION  = 'sqlite';
 env.TYPEORM_DATABASE    = path.join(__dirname, 'registrardb.sqlite');
 env.TYPEORM_SYNCHRONIZE = true;
 env.TYPEORM_LOGGING     = false;
-env.TYPEORM_ENTITIES    = '../**/entities/*.js';
+// env.TYPEORM_ENTITIES    = '../**/entities/*.js';
 
 describe('Initialize Registrar', function() {
     before(async function() {
         try {
-            await connect("registrardb.sqlite");
+            await connect();
         } catch (e) {
             console.error(`Initialize Registrar failed with `, e);
             throw e;
@@ -41,6 +42,7 @@ describe('Initialize Registrar', function() {
 
     it('should successfully initialize the Registrar', async function() {
         assert.isTrue(connected());
+        // console.log(connectionOptions());
     });
 });
 
