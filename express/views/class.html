@@ -1,4 +1,10 @@
+{% extends "layout.njk" %}
 
+{% block header %}
+{% include "header.njk" %}
+{% endblock %}
+
+{% block body %}
 <div class="container-fluid">
     <table class="row">
         <tr>
@@ -13,14 +19,13 @@
             <th>Hours</th>
             <td>{{class.hours}}</td>
         </tr>
-        {{#each class.students}}
+        {% for student in class.students %}
         <tr>
             <th>Enrolled-Student</th>
-            <td><a href="/registrar/students/read?id={{id}}">{{name}}</a></td>
+            <td><a href="/registrar/students/read?id={{student.id}}">
+                    {{student.name}}</a></td>
         </tr>
-        {{/each}}
+        {% endfor %}
     </table>
 </div>
-
-{{> footerjs}}
-
+{% endblock %}

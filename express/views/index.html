@@ -1,0 +1,21 @@
+{% extends "layout.njk" %}
+
+{% block header %}
+{% include "header.njk" %}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+    <div id="students" class="col-12 btn-group-vertical" role="group">
+      {% for student in students %}
+      <a class="btn btn-lg btn-block btn-outline-dark" 
+          href="/registrar/students/read?id={{student.id}}">
+        {{student.name}}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

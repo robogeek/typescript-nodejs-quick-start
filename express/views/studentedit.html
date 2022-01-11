@@ -1,20 +1,26 @@
+{% extends "layout.njk" %}
 
+{% block header %}
+{% include "header.njk" %}
+{% endblock %}
+
+{% block body %}
 <form method="POST" action="/registrar/students">
     <div class="container-fluid">
-        {{#if docreate}}
+        {% if docreate %}
         <input type='hidden' name='docreate' value="create">
         <input type='hidden' name='id' value="-1">
-        {{else}}
+        {% else %}
         <input type='hidden' name='docreate' value="update">
         <input type='hidden' name='id' value="{{id}}">
-        {{/if}}
+        {% endif %}
         
         <div class="form-group row">
         <label for="name"  class="col-2 col-form-label">Name</label>
         <div class="col">
             <input type="text" class="form-control" 
                 id='name' name='name' placeholder="student name" 
-                value='{{#if student}}{{student.name}}{{/if}}'>
+                value='{% if student %}{{student.name}}{% endif %}'>
         </div>
         </div>
 
@@ -23,7 +29,7 @@
         <div class="col">
             <input type="text" class="form-control" 
                 id='entered' name='entered' placeholder="YYYY" 
-                value='{{#if student}}{{student.entered}}{{/if}}'>
+                value='{% if student %}{{student.entered}}{% endif %}'>
         </div>
         </div>
 
@@ -32,7 +38,7 @@
         <div class="col">
             <input type="text" class="form-control" 
                 id='grade' name='grade' placeholder="# 1-4" 
-                value='{{#if student}}{{student.grade}}{{/if}}'>
+                value='{% if student %}{{student.grade}}{% endif %}'>
         </div>
         </div>
 
@@ -42,48 +48,47 @@
             <div class="custom-control custom-radio custom-control-inline">
                 <input type="radio" id="genderMale" 
                         name="gender" value="male" class="custom-control-input"
-                        {{#if isMale}}checked{{/if}}>
+                        {% if isMale %}checked{% endif %}>
                 <label class="custom-control-label" for="genderMale">Male</label>
             </div>
             <div class="custom-control custom-radio custom-control-inline">
                 <input type="radio" id="genderFemale" 
                         name="gender" value="female" class="custom-control-input"
-                        {{#if isFemale}}checked{{/if}}>
+                        {% if isFemale %}checked{% endif %}>
                 <label class="custom-control-label" for="genderFemale">Female</label>
             </div>
         </div>
         </div>
 
-        {{#each classes}}
+        {% for clazz in classes %}
         <div class="form-group row">
         <label for="grade"  class="col-2 col-form-label">Enrolled-In</label>
         <div class="col">
             <div class="form-check">
-                {{#if isEnrolled}}
+                {% if clazz.isEnrolled %}
                 <input class="form-check-input" 
                     type="checkbox" 
-                    value="{{code}}" checked
-                    id="enrolled-class-{{code}}"
+                    value="{{clazz.code}}" checked
+                    id="enrolled-class-{{clazz.code}}"
                     name="enrolled-class[]">
-                {{else}}
+                {% else %}
                 <input class="form-check-input" 
                     type="checkbox" 
-                    value="{{code}}" 
-                    id="enrolled-class-{{code}}"
+                    value="{{clazz.code}}" 
+                    id="enrolled-class-{{clazz.code}}"
                     name="enrolled-class[]">
-                {{/if}}
+                {% endif %}
                 <label class="form-check-label" 
-                    for="enrolled-class-{{code}}">
-                        {{code}} {{name}}
+                    for="enrolled-class-{{clazz.code}}">
+                        {{clazz.code}} {{clazz.name}}
                 </label>
             </div>
         </div>
         </div>
-        {{/each}}
+        {% endfor %}
 
         <button type="submit" class="btn btn-outline-dark">Submit</button>
 
     </div>
 </form>
-
-{{> footerjs}}
+{% endblock %}

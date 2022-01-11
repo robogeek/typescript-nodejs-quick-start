@@ -1,4 +1,10 @@
+{% extends "layout.njk" %}
 
+{% block header %}
+{% include "header.njk" %}
+{% endblock %}
+
+{% block body %}
 <form method='POST' action='/registrar/students/destroy/confirm'>
 <div class="container-fluid">
     <input type='hidden' name='id' value='{{student.id}}'>
@@ -15,7 +21,4 @@
     </div>
 </div>
 </form>
-
-
-{{> footerjs}}
-
+{% endblock %}
