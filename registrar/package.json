@@ -7,13 +7,16 @@
   "type": "commonjs",
   "scripts": {
     "build": "rm -rf build && tsc",
-    "test": "cd test && npm run test"
+    "watch": "tsc --watch",
+    "test": "cd test && npm run test",
+    "monitor": "nodemon --watch dist --exec 'npm run test'"
   },
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/js-yaml": "^4.x",
     "@types/node": "^16.x",
+    "nodemon": "^2.0.15",
     "typescript": "^4.5.x"
   },
   "dependencies": {

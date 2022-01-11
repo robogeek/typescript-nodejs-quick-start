@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "watch-ts": "tsc -w",
-    "serve": "node ./dist/index.js"
+    "serve": "node ./dist/index.js",
+    "watch": "nodemon --config nodemon.json dist/index.js"
   },
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "hbs": "^4.2.x",
     "method-override": "^3.0.0",
     "morgan": "^1.10.x",
+    "nodemon": "^2.0.15",
     "nunjucks": "^3.2.x",
     "popper.js": "^1.16.x",
     "registrar": "file:../registrar",
