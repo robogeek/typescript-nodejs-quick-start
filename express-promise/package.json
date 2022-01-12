@@ -1,0 +1,42 @@
+{
+  "name": "typescript-express-example",
+  "version": "2.0.0",
+  "description": "Example of using Express with TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "serve": "node ./dist/index.js",
+    "monitor": "nodemon --config nodemon.json dist/index.js"
+  },
+  "author": "David Herron <david@davidherron.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.x",
+    "bootstrap": "^5.1.x",
+    "chokidar": "^3.5.2",
+    "cookie-parser": "^1.4.x",
+    "express": "^4.17.x",
+    "express-fileupload": "^1.2.1",
+    "express-promise-router": "^4.1.1",
+    "hbs": "^4.2.x",
+    "method-override": "^3.0.0",
+    "morgan": "^1.10.x",
+    "nodemon": "^2.0.15",
+    "nunjucks": "^3.2.x",
+    "popper.js": "^1.16.x",
+    "registrar": "file:../registrar",
+    "require-it": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.x",
+    "@types/errorhandler": "^1.5.x",
+    "@types/express": "^4.17.x",
+    "@types/express-fileupload": "^1.2.2",
+    "@types/method-override": "0.0.31",
+    "@types/morgan": "^1.9.x",
+    "@types/node": "^16.x",
+    "@types/nunjucks": "^3.2.1",
+    "typescript": "^4.5.x"
+  }
+}
