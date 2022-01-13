@@ -1,16 +1,56 @@
 
 import * as util from 'util';
 import * as express from 'express';
-import { Router, Get, Post, Req, Res, Next, Params, Body } from '@reflet/express';
+import {
+        Router, Get, Post, Req, Res, Next, Params, Body, Use, Catch, Query
+} from '@reflet/express';
 import { 
     Student,
     getStudentRepository,
     OfferedClass,
     getOfferedClassRepository
 } from 'registrar';
+import { LogRequest } from './classes.js';
+
+function IsGoodStudentID() {
+    console.log(`IsGoodStudentID outer function`);
+    return Use(async (
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction) => {
+        console.log(`IsGoodStudentID inner function`);
+        if (typeof req.query === 'undefined') {
+            return next({ status: 400, message: `No query object on ${req.url}` });
+        }
+        if (typeof req.query.id === 'undefined') {
+            return next({ status: 400, message: `No student ID on ${req.url}` });
+        }
+        if (typeof req.query.id !== 'string') {
+            return next({
+                status: 400,
+                message: `Invalid student ID on ${req.url} - ${req.query.id}`
+            });
+        }
+
+        let studentid = ensureNumber(req.query.id);
+
+        console.log(`IsGoodStudentID passed all checks for ${studentid}`);
+
+        if (!await getStudentRepository().studentIDexists(studentid)) {
+            console.log(`IsGoodStudentID student ID ${studentid} does not exist`);
+            return next({
+                status: 400,
+                message: `Student ${studentid} does not exist`
+            });
+        }
+        console.log(`IsGoodStudentID student ID ${studentid} exists -- FINI`);
+        next();
+    });
+}
 
 @Router('/')
 export class HomePageController {
+    @LogRequest()
     @Get('/')
     async home(
         @Req() req: express.Request,
@@ -23,8 +63,15 @@ export class HomePageController {
     }
 }
 
+@Catch((err, req, res, next) => {
+    res.status(err.status);
+    res.render('error.html', {
+        message: `StudentsController FAIL because: ${err.message}`
+    });
+})
 @Router('/registrar/students')
 export class StudentsController {
+    @LogRequest()
     @Get('/create')
     async create(
         @Req() req: express.Request,
@@ -40,6 +87,7 @@ export class StudentsController {
         });
     }
 
+    @LogRequest()
     @Post('/')
     async createUpdateStudent(
         @Req() req: express.Request,
@@ -77,15 +125,18 @@ export class StudentsController {
         res.redirect(`/registrar/students/read?id=${studentid}`);
     }
 
+    @IsGoodStudentID()
+    @LogRequest()
     @Get('/read')
     async read(
         @Req() req: express.Request,
         @Res() res: express.Response,
-        @Next() next: express.NextFunction): Promise<void> {
+        @Next() next: express.NextFunction,
+        @Query('id') id: string): Promise<void> {
 
-        console.log(req.query);
+        console.log(`StudentsController read id ${id}`);
         let student;
-        let studentid = parseInt(<string>req.query.id);
+        let studentid = parseInt(id);
         student = await getStudentRepository()
                             .findOneStudent(studentid);
         console.log(`read ${req.query.id} => ${util.inspect(student)}`);
@@ -96,6 +147,8 @@ export class StudentsController {
         });
     }
 
+    @IsGoodStudentID()
+    @LogRequest()
     @Get('/update')
     async update(
         @Req() req: express.Request,
@@ -118,6 +171,8 @@ export class StudentsController {
         });
     }
 
+    @IsGoodStudentID()
+    @LogRequest()
     @Get('/destroy')
     async destroy(
         @Req() req: express.Request,
@@ -136,6 +191,8 @@ export class StudentsController {
         });
     }
 
+    @IsGoodStudentID()
+    @LogRequest()
     @Post('/destroy/confirm')
     async dodestroy(
         @Req() req: express.Request,

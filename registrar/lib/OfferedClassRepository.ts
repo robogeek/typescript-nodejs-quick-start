@@ -50,6 +50,17 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return cls;
     }
 
+    async classCodeExists(code: string): Promise<boolean> {
+        let cls = await this.findOne({
+            where: { code: code }
+        });
+        if (!OfferedClassRepository.isOfferedClass(cls)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     async updateOfferedClass(
                 code: string,
                 offeredClass: OfferedClass

@@ -38,6 +38,17 @@ export class StudentRepository extends Repository<Student> {
         return students;
     }
 
+    async studentIDexists(id: number): Promise<boolean> {
+        let student: Student = await this.findOne({
+            where: { id: id }
+        });
+        if (!StudentRepository.isStudent(student)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     async findOneStudent(id: number): Promise<Student> {
         let student: Student = await this.findOne({ 
             where: { id: id },
