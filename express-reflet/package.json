@@ -12,6 +12,7 @@
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
   "dependencies": {
+    "@reflet/express": "^1.6.0",
     "body-parser": "^1.19.x",
     "bootstrap": "^5.1.x",
     "chokidar": "^3.5.2",

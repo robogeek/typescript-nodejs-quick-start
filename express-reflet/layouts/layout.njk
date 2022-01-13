@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" 
+          href="/assets/vendor/bootstrap/css/bootstrap.css">
+</head>
+<body>
+    {% block header %}{% endblock %}
+    {% block body %}{% endblock %}
+
+    <script src="/assets/vendor/popper.js/umd/popper.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.js"></script>
+
+    {% block footerjs %}{% endblock %}
+</body>
+</html>
