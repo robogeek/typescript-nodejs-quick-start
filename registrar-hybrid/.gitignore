@@ -1,0 +1,5 @@
+dist-cjs
+dist-esm
+node_modules
+package-lock.json
+registrardb.sqlite
