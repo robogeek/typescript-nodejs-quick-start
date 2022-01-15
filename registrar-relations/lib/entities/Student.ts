@@ -6,7 +6,9 @@ import {
     ManyToMany,
     JoinTable,
     BeforeInsert,
-    BeforeUpdate
+    BeforeUpdate,
+    OneToOne,
+    JoinColumn
 } from "typeorm";
 
 import {
@@ -24,6 +26,8 @@ import {
 } from 'class-validator';
 
 import { OfferedClass } from './OfferedClass.js';
+
+import { StudentPet } from './StudentPet.js';
 
 @ValidatorConstraint()
 class IsName implements ValidatorConstraintInterface {
@@ -74,6 +78,10 @@ export class Student {
     @ManyToMany(() => OfferedClass, oclass => oclass.students)
     @JoinTable()
     classes: OfferedClass[];
+
+    @OneToOne(() => StudentPet)
+    @JoinColumn()
+    pet: StudentPet;
 
     @BeforeInsert()
     async validateInsert() {

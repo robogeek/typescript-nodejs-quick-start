@@ -8,6 +8,8 @@ import {
     Student,
     getStudentRepository,
     StudentRepository,
+    getStudentPetRepository,
+    StudentPetRepository,
     getOfferedClassRepository,
     OfferedClassRepository
 } from '../dist/index.js';
@@ -301,6 +303,94 @@ describe('Update student in registry', function() {
         assert.equal(student.grade, stud1.grade);
         assert.isString(student.gender);
         assert.equal(student.gender, "female");
+    });
+});
+
+describe('Students and their Pet', function() {
+
+    const stud1 = {
+        name: "John Petowner",
+        entered: 2010, grade: 1,
+        gender: "male"
+    };
+    let studentid1;
+
+    const pet1 = {
+        name: "Fi fi",
+        breed: "Mastodon"
+    };
+    let petid1;
+    const pet2 = {
+        name: "Fluffy",
+        breed: "Persian Cat"
+    };
+    let petid2;
+    const pet_invalid = {
+        name: "Fluffy!!223",
+        breed: "Persian Cat 123"
+    };
+
+    before(async function() {
+        studentid1 = await getStudentRepository().createAndSave(stud1);
+    });
+
+    it('should add a pet to database', async function() {
+        petid1 = await getStudentPetRepository().createAndSave(pet1);
+    });
+
+    it('should load pet from database', async function() {
+        let pet = await getStudentPetRepository().findOnePet(petid1);
+
+        assert.isOk(pet);
+        assert.isTrue(StudentPetRepository.isStudentPet(pet));
+        assert.deepEqual({
+            name: pet.name, breed: pet.breed
+        }, pet1);
+    });
+
+    it('should update student to own pet', async function() {
+        let thepet = await getStudentPetRepository().findOne(petid1);
+        await getStudentPetRepository().studentHasPet(studentid1, thepet.id);
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        // console.log(student);
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.pet.id, thepet.id);
+        assert.isTrue(StudentPetRepository.isStudentPet(student.pet));
+    });
+
+    it('should change the pet', async function() {
+        petid2 = await getStudentPetRepository().createAndSave(pet2);
+        await getStudentPetRepository().studentHasPet(studentid1, petid2);
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        // console.log(student);
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.pet.id, petid2);
+        assert.isTrue(StudentPetRepository.isStudentPet(student.pet));
+    });
+
+    it('should remove pet', async function() {
+        await getStudentPetRepository().studentHasNoPet(studentid1);
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        // console.log(student);
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.isNotOk(student.pet);
+    });
+
+    it('should refuse invalid pet', async function() {
+        let petid;
+        let caughtError = false;
+        try {
+            petid = await getStudentPetRepository().createAndSave(pet_invalid);
+        } catch (e) {
+            caughtError = true;
+        }
+        assert.isTrue(caughtError);
     });
 });
 

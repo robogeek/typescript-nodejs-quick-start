@@ -17,6 +17,10 @@ import { OfferedClassRepository } from './OfferedClassRepository';
 export { OfferedClassRepository } from './OfferedClassRepository';
 import { OfferedClass } from './entities/OfferedClass';
 export { OfferedClass } from './entities/OfferedClass';
+import { StudentPet } from "./entities/StudentPet";
+export { StudentPet } from "./entities/StudentPet";
+import { StudentPetRepository } from './StudentPetRepository';
+export { StudentPetRepository } from './StudentPetRepository';
 
 export var connection: Connection;
 
@@ -32,7 +36,7 @@ export async function connect() {
     const connectionOptions = await getConnectionOptions();
     Object.assign(connectionOptions, {
         entities: [
-            Student, OfferedClass
+            Student, OfferedClass, StudentPet
         ]});
     connection = await createConnection(connectionOptions);
 
@@ -56,6 +60,10 @@ export function connectionOptions() {
 
 export function getStudentRepository(): StudentRepository {
     return connection.getCustomRepository(StudentRepository);
+}
+
+export function getStudentPetRepository(): StudentPetRepository {
+    return connection.getCustomRepository(StudentPetRepository);
 }
 
 export function getOfferedClassRepository(): OfferedClassRepository {

@@ -33,7 +33,7 @@ export class StudentRepository extends Repository<Student> {
 
     async findAll(): Promise<Student []> {
         let students = await this.find({
-            relations: [ "classes" ]
+            relations: [ "classes", "pet" ]
         });
         return students;
     }
@@ -52,7 +52,7 @@ export class StudentRepository extends Repository<Student> {
     async findOneStudent(id: number): Promise<Student> {
         let student: Student = await this.findOne({ 
             where: { id: id },
-            relations: [ "classes" ]
+            relations: [ "classes", "pet" ]
         });
         // console.log(`findOneStudent ${util.inspect(id)} ==> ${util.inspect(student)}`);
         if (!StudentRepository.isStudent(student)) {

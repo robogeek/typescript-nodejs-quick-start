@@ -9,7 +9,7 @@
     "build": "rm -rf build && tsc",
     "watch": "tsc --watch",
     "test": "cd test && npm run test",
-    "monitor": "nodemon --watch dist --exec 'npm run test'"
+    "monitor": "nodemon --watch dist --watch test --exec 'npm run test'"
   },
   "author": "David Herron <david@davidherron.com>",
   "license": "ISC",
