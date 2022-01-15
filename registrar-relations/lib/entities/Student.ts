@@ -3,11 +3,12 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
+    OneToOne,
+    OneToMany,
     ManyToMany,
     JoinTable,
     BeforeInsert,
     BeforeUpdate,
-    OneToOne,
     JoinColumn
 } from "typeorm";
 
@@ -28,6 +29,8 @@ import {
 import { OfferedClass } from './OfferedClass.js';
 
 import { StudentPet } from './StudentPet.js';
+
+import { StudentPhoto } from './StudentPhoto';
 
 @ValidatorConstraint()
 class IsName implements ValidatorConstraintInterface {
@@ -82,6 +85,10 @@ export class Student {
     @OneToOne(() => StudentPet)
     @JoinColumn()
     pet: StudentPet;
+
+    @OneToMany(() => StudentPhoto, 
+            photo => photo.student)
+    photos: StudentPhoto[];
 
     @BeforeInsert()
     async validateInsert() {

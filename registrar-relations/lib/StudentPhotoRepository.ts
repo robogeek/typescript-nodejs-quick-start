@@ -1,0 +1,62 @@
+import { EntityRepository, Repository } from "typeorm";
+
+import * as util from 'util';
+
+import { getStudentRepository } from './index.js';
+import { StudentPhoto } from './entities/StudentPhoto';
+
+@EntityRepository(StudentPhoto)
+export class StudentPhotoRepository extends Repository<StudentPhoto> {
+
+    async createAndSave(studentphoto: StudentPhoto): Promise<number> {
+        if (!StudentPhotoRepository.isStudentPhoto(studentphoto)) {
+            throw new Error(`Bad pet supplied`);
+        }
+        let photo = new StudentPhoto();
+        photo.url = studentphoto.url;
+        await this.save(photo);
+        return photo.id;
+    }
+
+    async findOnePhotoByURL(photourl: string): Promise<StudentPhoto> {
+        let thephoto = await this.findOne({ 
+            where: { url: photourl },
+            relations: [ "student" ]
+        });
+        // console.log(`findOnePhotoByURL ${photourl} `, thephoto);
+        if (!StudentPhotoRepository.isStudentPhoto(thephoto)) {
+            throw new Error(`StudentPhoto url ${util.inspect(photourl)} did not retrieve a StudentPhoto`);
+        }
+        return thephoto;
+    }
+
+    async findOnePhoto(photoid: number): Promise<StudentPhoto> {
+        let photo = await this.findOne({ 
+            where: { id: photoid },
+            relations: [ "student" ]
+        });
+        // console.log(`findOnePhoto ${photoid} `, photo);
+        if (!StudentPhotoRepository.isStudentPhoto(photo)) {
+            throw new Error(`StudentPhoto id ${util.inspect(photoid)} did not retrieve a StudentPhoto`);
+        }
+        return photo;
+    }
+
+    async addPhoto(studentid: number, photoid: number): Promise<void> {
+        let photo = await this.findOnePhoto(photoid);
+        // console.log(`addPhoto ${photoid}`, photo);
+        if (!StudentPhotoRepository.isStudentPhoto(photo)) {
+            throw new Error(`Bad photo supplied`);
+        }
+        let student = await getStudentRepository().findOneStudent(studentid);
+        if (!student.photos) student.photos = [];
+        student.photos.push(photo);
+        await getStudentRepository().manager.save(student);
+    }
+
+    static isStudentPhoto(studentphoto: any): studentphoto is StudentPhoto {
+        return typeof studentphoto === 'object'
+            && typeof studentphoto.url === 'string';
+    }
+
+}

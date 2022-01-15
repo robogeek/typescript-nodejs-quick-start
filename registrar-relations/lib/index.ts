@@ -21,6 +21,10 @@ import { StudentPet } from "./entities/StudentPet";
 export { StudentPet } from "./entities/StudentPet";
 import { StudentPetRepository } from './StudentPetRepository';
 export { StudentPetRepository } from './StudentPetRepository';
+import { StudentPhoto } from './entities/StudentPhoto';
+export { StudentPhoto } from './entities/StudentPhoto';
+import { StudentPhotoRepository } from './StudentPhotoRepository';
+export { StudentPhotoRepository } from './StudentPhotoRepository';
 
 export var connection: Connection;
 
@@ -36,7 +40,7 @@ export async function connect() {
     const connectionOptions = await getConnectionOptions();
     Object.assign(connectionOptions, {
         entities: [
-            Student, OfferedClass, StudentPet
+            Student, OfferedClass, StudentPet, StudentPhoto
         ]});
     connection = await createConnection(connectionOptions);
 
@@ -64,6 +68,10 @@ export function getStudentRepository(): StudentRepository {
 
 export function getStudentPetRepository(): StudentPetRepository {
     return connection.getCustomRepository(StudentPetRepository);
+}
+
+export function getStudentPhotoRepository(): StudentPhotoRepository {
+    return connection.getCustomRepository(StudentPhotoRepository);
 }
 
 export function getOfferedClassRepository(): OfferedClassRepository {

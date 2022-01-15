@@ -10,6 +10,8 @@ import {
     StudentRepository,
     getStudentPetRepository,
     StudentPetRepository,
+    getStudentPhotoRepository,
+    StudentPhotoRepository,
     getOfferedClassRepository,
     OfferedClassRepository
 } from '../dist/index.js';
@@ -391,6 +393,80 @@ describe('Students and their Pet', function() {
             caughtError = true;
         }
         assert.isTrue(caughtError);
+    });
+});
+
+describe('Student photos', function() {
+
+    const stud1 = {
+        name: "John Photobug",
+        entered: 2010, grade: 1,
+        gender: "male"
+    };
+    let studentid1;
+
+    const photo1 = "http://some.where/photo1.jpg";
+    const photo2 = "http://some.where/photo2.jpg";
+
+    let photoid1;
+    let photoid2;
+
+    before(async function() {
+        studentid1 = await getStudentRepository().createAndSave(stud1);
+    });
+
+    it('should find zero photos for newly added student', async function() {
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.photos);
+        assert.isArray(student.photos);
+        assert.equal(student.photos.length, 0);
+    });
+
+    it('should add a photo', async function() {
+
+        photoid1 = await getStudentPhotoRepository().createAndSave({
+            url: photo1
+        });
+        await getStudentPhotoRepository().addPhoto(studentid1, photoid1);
+
+        const photo = await getStudentPhotoRepository().findOnePhoto(photoid1);
+        assert.isOk(photo);
+        assert.isTrue(StudentPhotoRepository.isStudentPhoto(photo));
+        assert.equal(photo.url, photo1);
+    });
+
+    it('should add another photo', async function() {
+
+        photoid2 = await getStudentPhotoRepository().createAndSave({
+            url: photo2
+        });
+        await getStudentPhotoRepository().addPhoto(studentid1, photoid2);
+
+        const photo = await getStudentPhotoRepository().findOnePhoto(photoid2);
+        assert.isOk(photo);
+        assert.isTrue(StudentPhotoRepository.isStudentPhoto(photo));
+        assert.equal(photo.url, photo2);
+    });
+
+    it('should have correct photos for student', async function() {
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.photos);
+        assert.isArray(student.photos);
+        assert.equal(student.photos.length, 2);
+
+        const goodPhoto = url => {
+            return url === photo1 || url === photo2;
+        };
+        assert.isTrue(goodPhoto(student.photos[0].url));
+        assert.isTrue(goodPhoto(student.photos[1].url));
     });
 });
 
