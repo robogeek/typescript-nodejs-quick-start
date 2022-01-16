@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 
 import * as util from 'util';
 
-import { getStudentRepository } from './index.js';
+import { getStudentRepository, Student } from './index.js';
 import { StudentRepository } from "./StudentRepository.js";
 import { StudentPet } from './entities/StudentPet.js';
 
@@ -24,9 +24,9 @@ export class StudentPetRepository extends Repository<StudentPet> {
     }
 
     async findOnePet(petid: number): Promise<StudentPet> {
-        let thepet = await this.findOne({ 
-            where: { id: petid }
-        });
+        const thepet = await this.createQueryBuilder("pet")
+                            .where("pet.id = :id", { id: petid })
+                            .getOne();
         // console.log(`findOnePet ${petid} `, thepet);
         if (!StudentPetRepository.isStudentPet(thepet)) {
             throw new Error(`StudentPet id ${util.inspect(petid)} did not retrieve a StudentPet`);
@@ -35,19 +35,22 @@ export class StudentPetRepository extends Repository<StudentPet> {
     }
 
     async studentHasPet(studentid: number, petid: number): Promise<void> {
-        let thepet = await this.findOnePet(petid);
+        const thepet = await this.createQueryBuilder("pet")
+                            .where("pet.id = :id", { id: petid })
+                            .getOne();
+        if (!thepet) {
+            throw new Error(`No pet for ${petid}`);
+        }
         
         if (!StudentPetRepository.isStudentPet(thepet)) {
             throw new Error(`Bad pet supplied`);
         }
 
         let student = await getStudentRepository().findOneStudent(studentid);
-        if (!StudentRepository.isStudent(student)) {
-            throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
-        }
-        
-        student.pet = thepet;
-        await getStudentRepository().manager.save(student);
+        await getStudentRepository().createQueryBuilder('student')
+                .relation(Student, "pet")
+                .of(student)
+                .set(thepet);
     }
 
     async studentHasNoPet(studentid: number): Promise<void> {
@@ -55,10 +58,10 @@ export class StudentPetRepository extends Repository<StudentPet> {
         if (!StudentRepository.isStudent(student)) {
             throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
         }
-        // console.log(`studentHasNoPet `, student);
-
-        student.pet = null;
-        await getStudentRepository().manager.save(student);
+        await getStudentRepository().createQueryBuilder('student')
+                .relation(Student, "pet")
+                .of(student)
+                .set(null);
     }
 
     static isStudentPet(studentpet: any): studentpet is StudentPet {
