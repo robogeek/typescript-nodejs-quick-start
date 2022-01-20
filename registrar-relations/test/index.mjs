@@ -12,6 +12,8 @@ import {
     StudentPetRepository,
     getStudentPhotoRepository,
     StudentPhotoRepository,
+    getStudentHobbyRepository,
+    StudentHobbyRepository,
     getOfferedClassRepository,
     OfferedClassRepository
 } from '../dist/index.js';
@@ -468,6 +470,134 @@ describe('Student photos', function() {
         assert.isTrue(goodPhoto(student.photos[0].url));
         assert.isTrue(goodPhoto(student.photos[1].url));
     });
+
+    it('should delete a photo relation', async function() {
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.photos);
+        assert.isArray(student.photos);
+        assert.equal(student.photos.length, 2);
+
+        await getStudentPhotoRepository().deletePhoto(studentid1, photoid2);
+
+        student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.photos);
+        assert.isArray(student.photos);
+        assert.equal(student.photos.length, 1);
+        assert.equal(student.photos[0].url, photo1);
+    });
+
+    it('should delete studentphoto instance', async function() {
+        await getStudentPhotoRepository().delete(photoid1);
+
+        const student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.photos);
+        assert.isArray(student.photos);
+        assert.equal(student.photos.length, 0);
+    });
+});
+
+describe('Student Hobbies', function() {
+
+    const stud1 = {
+        name: "John Freetime",
+        entered: 2010, grade: 1,
+        gender: "male"
+    };
+    let studentid1;
+
+    before(async function() {
+        studentid1 = await getStudentRepository().createAndSave(stud1);
+    });
+
+    it('should find zero hobbies for newly added student', async function() {
+        let student = await getStudentRepository().findOneStudent(studentid1);
+
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.hobbies);
+        assert.isArray(student.hobbies);
+        assert.equal(student.hobbies.length, 0);
+    });
+
+    it('should add a hobby', async function() {
+        await getStudentHobbyRepository()
+                .studentHasHobby(studentid1, "Fishing");
+        let student = await getStudentRepository()
+                .findOneStudent(studentid1);
+
+        console.log(student);
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.hobbies);
+        assert.isArray(student.hobbies);
+        assert.equal(student.hobbies.length, 1);
+        assert.equal(student.hobbies[0].name, 'Fishing');
+    });
+
+    it('should add another hobby', async function() {
+        await getStudentHobbyRepository()
+                .studentHasHobby(studentid1, "Running");
+        let student = await getStudentRepository()
+                .findOneStudent(studentid1);
+
+        console.log(student);
+        assert.isOk(student);
+        assert.equal(student.id, studentid1);
+        assert.equal(student.name, stud1.name);
+        assert.isOk(student.hobbies);
+        assert.isArray(student.hobbies);
+        assert.equal(student.hobbies.length, 2);
+        const goodHobby = (hobby) => {
+            return hobby.name === 'Fishing'
+                || hobby.name === 'Running';
+        };
+        assert.isOk(goodHobby(student.hobbies[0]));
+        assert.isOk(goodHobby(student.hobbies[1]));
+    });
+
+    it('should studentsForHobby', async function() {
+
+        await getStudentPetRepository().studentHasPet(studentid1, 1);
+        console.log(await getStudentHobbyRepository().studentsForHobby('Fishing'));
+    });
+
+    it('should quit a hobby', async function() {
+        await getStudentHobbyRepository()
+                    .studentQuitsHobby(studentid1, 'Running');
+        assert.isFalse(await getStudentHobbyRepository()
+                    .studentPracticesHobby(studentid1, 'Running'));
+        let runners = await getStudentHobbyRepository().studentsForHobby('Running');
+        for (let runner of runners) {
+            assert.notEqual(runner.id, studentid1);
+        }
+    });
+
+    it('should delete relationship for removed hobby', async function() {
+        const thehobby = await getStudentHobbyRepository()
+                                    .findOneHobby('Fishing');
+        await getStudentHobbyRepository().delete(thehobby.id);
+
+        const student = await getStudentRepository()
+                .findOneStudent(studentid1);
+        for (let hobby of student.hobbies) {
+            assert.isTrue(hobby.name !== 'Fishing');
+        }
+    });
+
 });
 
 describe('Delete student from registry', function() {
@@ -732,5 +862,24 @@ describe('Initialize Offered Classes in registry', function() {
         }
         assert.isTrue(foundbw303);
         assert.isTrue(foundbw401);
+    });
+
+    it('should remove student from class', async function() {
+        await getOfferedClassRepository()
+                .removeStudentFromClass(studentid2, "BW401");
+
+        let student = await getStudentRepository()
+                .findOneStudent(studentid2);
+        assert.isTrue(StudentRepository.isStudent(student));
+
+        for (let clazz of student.classes) {
+            assert.notEqual(clazz.code, "BW401");
+        }
+
+        let classbw203 = await getOfferedClassRepository()
+                        .findOneClass("BW401");
+        for (let stud of classbw203.students) {
+            assert.notEqual(stud.id, studentid2);
+        }
     });
 });

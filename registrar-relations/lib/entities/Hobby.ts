@@ -1,31 +1,23 @@
-import { 
-    BeforeInsert,
-    BeforeUpdate,
-    Entity,
-    PrimaryGeneratedColumn,
-    Column
+
+import {
+    Entity, PrimaryGeneratedColumn,
+    Column, BeforeInsert, BeforeUpdate,
 } from "typeorm";
 
 import {
-    validateOrReject,
-    Matches,
-    IsString,
-    IsAscii
+    validateOrReject, IsString, IsAscii, Matches
 } from 'class-validator';
 
 @Entity()
-export class StudentPet {
-
+export class StudentHobby {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()    @IsString()   @IsAscii()
+    @Column()
+    @IsString()
+    @IsAscii()
     @Matches(/^[a-zA-Z ]+$/)
     name: string;
-
-    @Column()    @IsString()   @IsAscii()
-    @Matches(/^[a-zA-Z ]+$/)
-    breed: string;
 
     @BeforeInsert()
     async validateInsert() { await validateOrReject(this); }

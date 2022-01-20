@@ -4,7 +4,7 @@ import {
 } from 'class-validator';
 import { OfferedClass, OfferedClassUpdater } from './entities/OfferedClass.js';
 import { normalizeNumber, StudentRepository } from './StudentRepository.js';
-import { getStudentRepository } from './index.js';
+import { getStudentRepository, Student, getOfferedClassRepository } from './index.js';
 import * as util from 'util';
 import * as yaml from 'js-yaml';
 import { promises as fs, read } from 'fs';
@@ -95,7 +95,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     async enrollStudentInClass(
                 studentid: any, code: string
                 ): Promise<void> {
-        let offered = await this.findOneClass(code);
+        /* let offered = await this.findOneClass(code);
         if (!OfferedClassRepository.isOfferedClass(offered)) {
             throw new Error(`enrollStudentInClass did not find OfferedClass for ${util.inspect(code)}`);
         }
@@ -106,7 +106,79 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         
         if (!student.classes) student.classes = [];
         student.classes.push(offered);
-        await getStudentRepository().manager.save(student);
+        await getStudentRepository().manager.save(student); */
+
+        /* let offered = await this.findOneClass(code);
+        await this.createQueryBuilder()
+            .relation(Student, 'classes')
+            .of(studentid)
+            .add(offered); */
+        
+        /* let offered = await this.findOneClass(code);
+        if (!OfferedClassRepository.isOfferedClass(offered)) {
+            throw new Error(`enrollStudentInClass did not find OfferedClass for ${util.inspect(code)}`);
+        }
+        let student = await getStudentRepository().findOneStudent(studentid);
+        if (!StudentRepository.isStudent(student)) {
+            throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
+        }
+
+        if (!offered.students) offered.students = [];
+        offered.students.push(student);
+        await this.manager.save(offered); */
+        
+        let offered = await this.findOneClass(code);
+        await getStudentRepository().createQueryBuilder()
+                .relation(OfferedClass, 'students')
+                .of(offered)
+                .add(studentid);
+    }
+
+    async removeStudentFromClass(
+            studentid: any, code: string): Promise<void> {
+    
+        /* let offered = await this.findOneClass(code);
+        if (!OfferedClassRepository.isOfferedClass(offered)) {
+            throw new Error(`enrollStudentInClass did not find OfferedClass for ${util.inspect(code)}`);
+        }
+        let student = await getStudentRepository().findOneStudent(studentid);
+        if (!StudentRepository.isStudent(student)) {
+            throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
+        }
+        
+        if (!student.classes) student.classes = [];
+        student.classes = student.classes.filter(clazz => {
+            return clazz.code !== code;
+        });
+        await getStudentRepository().manager.save(student); */
+    
+        /* let offered = await this.findOneClass(code);
+        if (!OfferedClassRepository.isOfferedClass(offered)) {
+            throw new Error(`enrollStudentInClass did not find OfferedClass for ${util.inspect(code)}`);
+        }
+        let student = await getStudentRepository()
+                        .findOneStudent(studentid);
+        if (!StudentRepository.isStudent(student)) {
+            throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
+        }
+        
+        if (!offered.students) offered.students = [];
+        offered.students = offered.students.filter(stud => {
+            return stud.id !== studentid;
+        });
+        await getOfferedClassRepository().manager.save(offered); */
+
+        /* let offered = await this.findOneClass(code);
+        await this.createQueryBuilder()
+            .relation(Student, 'classes')
+            .of(studentid)
+            .remove(offered); */
+
+        let offered = await this.findOneClass(code);
+        await getStudentRepository().createQueryBuilder()
+                .relation(OfferedClass, 'students')
+                .of(offered)
+                .remove(studentid);
     }
 
     async updateStudentEnrolledClasses(

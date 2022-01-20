@@ -5,6 +5,7 @@ import * as util from 'util';
 import {
     validateOrReject
 } from 'class-validator';
+import { getOfferedClassRepository, OfferedClassRepository } from "./index.js";
 
 export type GenderType = "male" | "female";
 
@@ -33,7 +34,7 @@ export class StudentRepository extends Repository<Student> {
 
     async findAll(): Promise<Student []> {
         let students = await this.find({
-            relations: [ "classes", "pet", "photos" ]
+            relations: [ "classes", "pet", "photos", "hobbies" ]
         });
         return students;
     }
@@ -50,14 +51,36 @@ export class StudentRepository extends Repository<Student> {
     }
 
     async findOneStudent(id: number): Promise<Student> {
-        let student: Student = await this.findOne({ 
+
+        const student = await this.createQueryBuilder("student")
+                        .where("student.id = :id", { id: id })
+                        .getOne();
+
+        student.classes = await this.createQueryBuilder()
+                        .relation(Student, "classes")
+                        .of(student)
+                        .loadMany();
+        student.pet = await this.createQueryBuilder()
+                        .relation(Student, "pet")
+                        .of(student)
+                        .loadOne();
+        student.photos = await this.createQueryBuilder()
+                        .relation(Student, "photos")
+                        .of(student)
+                        .loadMany();
+        student.hobbies = await this.createQueryBuilder()
+                        .relation(Student, "hobbies")
+                        .of(student)
+                        .loadMany();
+        /* let student: Student = await this.findOne({ 
             where: { id: id },
-            relations: [ "classes", "pet", "photos" ]
+            relations: [ "classes", "pet", "photos", "hobbies" ]
         });
         // console.log(`findOneStudent ${util.inspect(id)} ==> ${util.inspect(student)}`);
         if (!StudentRepository.isStudent(student)) {
             throw new Error(`Student id ${util.inspect(id)} did not retrieve a Student`);
-        }
+        } */
+
         return student;
     }
 

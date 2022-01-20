@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 
 import * as util from 'util';
 
-import { getStudentRepository } from './index.js';
+import { getStudentRepository, Student } from './index.js';
 import { StudentPhoto } from './entities/StudentPhoto';
 
 @EntityRepository(StudentPhoto)
@@ -48,10 +48,22 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
         if (!StudentPhotoRepository.isStudentPhoto(photo)) {
             throw new Error(`Bad photo supplied`);
         }
-        let student = await getStudentRepository().findOneStudent(studentid);
-        if (!student.photos) student.photos = [];
-        student.photos.push(photo);
-        await getStudentRepository().manager.save(student);
+        await getStudentRepository().createQueryBuilder('student')
+                        .relation(Student, 'photos')
+                        .of(studentid)
+                        .add(photoid);
+    }
+
+    async deletePhoto(studentid: number, photoid: number): Promise<void> {
+        let photo = await this.findOnePhoto(photoid);
+        // console.log(`addPhoto ${photoid}`, photo);
+        if (!StudentPhotoRepository.isStudentPhoto(photo)) {
+            throw new Error(`Bad photo supplied`);
+        }
+        await getStudentRepository().createQueryBuilder('student')
+                        .relation(Student, 'photos')
+                        .of(studentid)
+                        .remove(photoid);
     }
 
     static isStudentPhoto(studentphoto: any): studentphoto is StudentPhoto {

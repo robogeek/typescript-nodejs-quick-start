@@ -27,10 +27,9 @@ import {
 } from 'class-validator';
 
 import { OfferedClass } from './OfferedClass.js';
-
 import { StudentPet } from './StudentPet.js';
-
 import { StudentPhoto } from './StudentPhoto';
+import { StudentHobby } from './Hobby';
 
 @ValidatorConstraint()
 class IsName implements ValidatorConstraintInterface {
@@ -81,6 +80,10 @@ export class Student {
     @ManyToMany(() => OfferedClass, oclass => oclass.students)
     @JoinTable()
     classes: OfferedClass[];
+
+    @ManyToMany(() => StudentHobby)
+    @JoinTable()
+    hobbies: StudentHobby[];
 
     @OneToOne(() => StudentPet)
     @JoinColumn()
