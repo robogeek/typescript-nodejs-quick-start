@@ -11,7 +11,7 @@ export default class LoadClasses extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(LoadClasses);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
         await Registrar.getOfferedClassRepository()
                         .updateClasses(args.classes);
     }

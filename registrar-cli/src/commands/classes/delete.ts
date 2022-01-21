@@ -14,7 +14,7 @@ export default class DeleteClass extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(DeleteClass);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
         await Registrar.getOfferedClassRepository()
                         .deleteOfferedClass(flags.code);
     }

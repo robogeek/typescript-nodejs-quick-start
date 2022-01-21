@@ -27,7 +27,7 @@ export default class AddStudents extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(AddStudents);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
 
         const student = new Registrar.Student();
 

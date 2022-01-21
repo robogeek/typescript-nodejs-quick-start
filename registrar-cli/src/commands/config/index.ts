@@ -14,13 +14,13 @@ export default class Configuration extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(Configuration);
-        await Registrar.connect("registrardb.sqlite");
-        if (!Registrar.connected) {
+        await Registrar.connect();
+        if (!Registrar.connected()) {
             throw new Error(`Database not connected`);
         }
         console.log({
             name: Registrar.connection.name,
-            options: Registrar.connection.options
+            options: Registrar.connectionOptions()
         });
         if (flags.driver) {
             console.log({

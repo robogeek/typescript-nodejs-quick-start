@@ -22,7 +22,7 @@ export default class AddClasses extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(AddClasses);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
 
         const offered = new Registrar.OfferedClass();
         offered.code = flags.code;

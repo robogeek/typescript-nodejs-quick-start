@@ -11,20 +11,20 @@ export default class UpdateStudents extends Command {
             required: true
         }),
         name: Flags.string({
-        description: 'Student name',
-        required: false
+            description: 'Student name',
+            required: false
         }),
         entered: Flags.integer({
-        description: 'Year entered',
-        required: false
+            description: 'Year entered',
+            required: false
         }),
         grade: Flags.integer({
-        description: 'Current level at school',
-        required: false
+            description: 'Current level at school',
+            required: false
         }),
         gender: Flags.string({
-        description: 'Gender',
-        required: false
+            description: 'Gender',
+            required: false
         })
     };
 
@@ -32,7 +32,7 @@ export default class UpdateStudents extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(UpdateStudents);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
 
         const student = new Registrar.Student();
         if (typeof flags.name !== 'undefined') {

@@ -15,7 +15,7 @@ export default class Students extends Command {
 
     async run(): Promise<void> {
         const {args, flags} = await this.parse(Students);
-        await Registrar.connect("registrardb.sqlite");
+        await Registrar.connect();
         const userlist = await Registrar.getStudentRepository()
                         .findAll();
         if (flags.table) {
