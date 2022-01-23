@@ -1,0 +1,11 @@
+{
+    "files": [ "mime.ts" ],
+    "compilerOptions": {
+        "lib": [ "es6", "es2021", "esnext" ],
+        "target": "es2021",
+        "module": "es2022",
+        "moduleResolution": "Node",
+        "outDir": "dist-esm-interop",
+        "esModuleInterop": true
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "files": [ "mime.ts" ],
+    "compilerOptions": {
+        "lib": [ "es6", "es2021", "esnext" ],
+        "target": "es2021",
+        "module": "commonjs",
+        "moduleResolution": "Node",
+        "outDir": "dist-cjs"
+    }
+}
