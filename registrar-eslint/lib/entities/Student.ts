@@ -14,8 +14,8 @@ import {
 
 import {
     validateOrReject,
-    ValidatorConstraint,
-    ValidatorConstraintInterface,
+    // ValidatorConstraint,
+    // ValidatorConstraintInterface,
     IsInt,
     Matches,
     Min,
@@ -31,18 +31,18 @@ import { StudentPet } from './StudentPet.js';
 import { StudentPhoto } from './StudentPhoto';
 import { StudentHobby } from './Hobby';
 
-@ValidatorConstraint()
+/* @ValidatorConstraint()
 class IsName implements ValidatorConstraintInterface {
     validate(text: string) {
         // console.log(`IsName ${text}`);
-        let matcher = text.match(/^[a-zA-Z ]+$/);
-        let ret = typeof matcher !== 'undefined'
+        const matcher = text.match(/^[a-zA-Z ]+$/);
+        const ret = typeof matcher !== 'undefined'
             && Array.isArray(matcher)
             && matcher.length > 0;
         // console.log(`IsName ${text} matches ${matcher} matched ${ret}`);
         return ret;
     }
-}
+} */
 
 @Entity()
 export class Student {

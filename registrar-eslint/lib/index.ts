@@ -30,7 +30,7 @@ export { StudentHobby } from './entities/Hobby';
 import { StudentHobbyRepository } from './StudentHobbyRepository';
 export { StudentHobbyRepository } from './StudentHobbyRepository';
 
-export var connection: Connection;
+export let connection: Connection;
 
 export async function connect() {
     // One option is this... to pass in a hard-coded configuration

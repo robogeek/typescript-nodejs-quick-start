@@ -8,7 +8,6 @@ import { StudentHobby } from './entities/Hobby';
 export class StudentHobbyRepository extends Repository<StudentHobby> {
 
     async ensureHobby(hobby: string): Promise<StudentHobby> {
-        let found = false;
         let thehobby = await this.findHobby(hobby);
         if (thehobby) return thehobby;
         thehobby = new StudentHobby();
@@ -18,10 +17,10 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
     }
 
     async findHobby(hobby: string): Promise<StudentHobby> {
-        let thehobby = await this.createQueryBuilder('hobby')
+        const thehobby = await this.createQueryBuilder('hobby')
                         .where('hobby.name = :name', { name: hobby })
                         .getOne();
-        /* let thehobby = await this.findOne({ 
+        /* const thehobby = await this.findOne({ 
             where: { name: hobby }
         }); */
         console.log(`findHobby ${hobby}`, thehobby);
@@ -29,7 +28,7 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
     }
 
     async findOneHobby(hobby: string): Promise<StudentHobby> {
-        let thehobby = await this.findHobby(hobby);
+        const thehobby = await this.findHobby(hobby);
         // console.log(`findOneHobby ${photourl} `, thephoto);
         if (!StudentHobbyRepository.isStudentHobby(thehobby)) {
             throw new Error(`StudentHobby url ${util.inspect(thehobby)} did not retrieve a StudentHobby`);
@@ -38,9 +37,9 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
     }
 
     async studentHasHobby(studentid: number, hobby: string): Promise<void> {
-        let thehobby = await this.ensureHobby(hobby);
+        const thehobby = await this.ensureHobby(hobby);
         console.log(`studentHasHobby found ${hobby}`, thehobby);
-        let student = await getStudentRepository().findOneStudent(studentid);
+        const student = await getStudentRepository().findOneStudent(studentid);
         console.log(`studentHasHobby ${studentid} ${hobby}`, student);
         console.log(`studentHasHobby ${hobby}`, thehobby);
         if (!await this.studentPracticesHobby(studentid, hobby)) {
@@ -49,7 +48,7 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
                     .relation(Student, "hobbies")
                     .of(student)
                     .add(thehobby);
-            let student2 = await getStudentRepository().findOneStudent(studentid);
+                    const student2 = await getStudentRepository().findOneStudent(studentid);
             console.log(`studentHasHobby after adding ${hobby}`, student2);
         }
     }
@@ -57,10 +56,10 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
     async studentPracticesHobby(studentid: number, hobby: string)
                     : Promise<boolean>
     {
-        let student = await getStudentRepository()
+        const student = await getStudentRepository()
                             .findOneStudent(studentid);
         let ret = false;
-        for (let thehobby of student.hobbies) {
+        for (const thehobby of student.hobbies) {
             console.log(`studentPracticesHobby ${thehobby.name} === ${hobby}`);
             if (thehobby.name === hobby) {
                 ret = true;
@@ -73,8 +72,8 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
 
     async studentQuitsHobby(studentid: number, hobby: string): Promise<void> {
 
-        let thehobby = await this.ensureHobby(hobby);
-        let student = await getStudentRepository().findOneStudent(studentid);
+        const thehobby = await this.ensureHobby(hobby);
+        const student = await getStudentRepository().findOneStudent(studentid);
         await getConnection()
                 .createQueryBuilder()
                 .relation(Student, "hobbies")
@@ -84,12 +83,12 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
 
     async studentsForHobby(hobby: string): Promise<Student[]> {
 
-        /* let students = await getStudentRepository()
+        /* const students = await getStudentRepository()
                 .createQueryBuilder('student')
                 .leftJoinAndSelect('student.hobbies', 'studenthobby')
                 .where("studenthobby.name = :name", { name: hobby })
                 .getMany(); */
-        let students = await getStudentRepository()
+        const students = await getStudentRepository()
                 .createQueryBuilder('student')
                 // These do not cause the tables to be loaded
                 // but cause the result to be empty
@@ -122,7 +121,7 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
         // The one hobby that's here is the one selected by the above.
         //
         // What this does is to fill in the rest of the fields.
-        for (let student of students) {
+        for (const student of students) {
             student.classes = await getConnection()
                                 .createQueryBuilder()
                                 .relation(Student, "classes")
@@ -148,7 +147,7 @@ export class StudentHobbyRepository extends Repository<StudentHobby> {
         return students;
     }
 
-    static isStudentHobby(studenthobby: any): studenthobby is StudentHobby {
+    static isStudentHobby(studenthobby: StudentHobby): studenthobby is StudentHobby {
         return typeof studenthobby === 'object'
             && typeof studenthobby.name === 'string';
     }

@@ -46,7 +46,7 @@ export class OfferedClass {
     @Max(7)
     hours: number;
 
-    @ManyToMany(type => Student, student => student.classes)
+    @ManyToMany(() => Student, student => student.classes)
     students: Student[];
 
     @BeforeInsert()

@@ -5,7 +5,7 @@ import * as util from 'util';
 import {
     validateOrReject
 } from 'class-validator';
-import { getOfferedClassRepository, OfferedClassRepository } from "./index.js";
+// import { getOfferedClassRepository, OfferedClassRepository } from "./index.js";
 
 export type GenderType = "male" | "female";
 
@@ -17,7 +17,7 @@ export enum Gender {
 export class StudentRepository extends Repository<Student> {
 
     async createAndSave(student: Student): Promise<number> {
-        let stud = new Student();
+        const stud = new Student();
         stud.name = student.name;
         stud.entered = normalizeNumber(student.entered, 'Bad year entered');
         stud.grade = normalizeNumber(student.grade, 'Bad grade');
@@ -33,14 +33,14 @@ export class StudentRepository extends Repository<Student> {
     }
 
     async findAll(): Promise<Student []> {
-        let students = await this.find({
+        const students = await this.find({
             relations: [ "classes", "pet", "photos", "hobbies" ]
         });
         return students;
     }
 
     async studentIDexists(id: number): Promise<boolean> {
-        let student: Student = await this.findOne({
+        const student: Student = await this.findOne({
             where: { id: id }
         });
         if (!StudentRepository.isStudent(student)) {
@@ -85,7 +85,7 @@ export class StudentRepository extends Repository<Student> {
     }
 
     async updateStudent(id: number, student: Student): Promise<number> {
-        let updater = new StudentUpdater();
+        const updater = new StudentUpdater();
         if (typeof student.entered !== 'undefined') {
             updater.entered = normalizeNumber(student.entered, 'Bad year entered');
         }
@@ -115,7 +115,7 @@ export class StudentRepository extends Repository<Student> {
         await this.manager.delete(Student, typeof student === 'number' ? student : student.id);
     }
 
-    static isStudent(student: any): student is Student {
+    static isStudent(student: Student): student is Student {
         return typeof student === 'object'
             && typeof student.name === 'string'
             && typeof student.entered === 'number'
@@ -123,7 +123,7 @@ export class StudentRepository extends Repository<Student> {
             && StudentRepository.isGender(student.gender);
     }
 
-    static isStudentUpdater(updater: any): boolean {
+    static isStudentUpdater(updater: StudentUpdater): updater is StudentUpdater {
         let ret = true;
         if (typeof updater !== 'object') {
             throw new Error('isStudentUpdater must get object');
@@ -143,7 +143,7 @@ export class StudentRepository extends Repository<Student> {
         return ret;
     }
 
-    static isGender(gender: any): gender is Gender {
+    static isGender(gender: Gender | string): gender is Gender {
         return typeof gender === 'string'
            && (gender === 'male' || gender === 'female');
     }
@@ -155,10 +155,10 @@ export function normalizeNumber(num: number | string, errorIfNotNumber: string):
         throw new Error(`${errorIfNotNumber} -- ${num}`);
     }
     if (typeof num === 'number') return num;
-    let ret = parseInt(num);
+    const ret = parseInt(num);
     if (isNaN(ret)) {
         throw new Error(`${errorIfNotNumber} ${ret} -- ${num}`);
     }
-    return ret!;
+    return ret;
 }
 

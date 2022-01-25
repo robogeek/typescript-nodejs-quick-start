@@ -12,14 +12,14 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
         if (!StudentPhotoRepository.isStudentPhoto(studentphoto)) {
             throw new Error(`Bad pet supplied`);
         }
-        let photo = new StudentPhoto();
+        const photo = new StudentPhoto();
         photo.url = studentphoto.url;
         await this.save(photo);
         return photo.id;
     }
 
     async findOnePhotoByURL(photourl: string): Promise<StudentPhoto> {
-        let thephoto = await this.findOne({ 
+        const thephoto = await this.findOne({ 
             where: { url: photourl },
             relations: [ "student" ]
         });
@@ -31,7 +31,7 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
     }
 
     async findOnePhoto(photoid: number): Promise<StudentPhoto> {
-        let photo = await this.findOne({ 
+        const photo = await this.findOne({ 
             where: { id: photoid },
             relations: [ "student" ]
         });
@@ -43,7 +43,7 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
     }
 
     async addPhoto(studentid: number, photoid: number): Promise<void> {
-        let photo = await this.findOnePhoto(photoid);
+        const photo = await this.findOnePhoto(photoid);
         // console.log(`addPhoto ${photoid}`, photo);
         if (!StudentPhotoRepository.isStudentPhoto(photo)) {
             throw new Error(`Bad photo supplied`);
@@ -55,7 +55,7 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
     }
 
     async deletePhoto(studentid: number, photoid: number): Promise<void> {
-        let photo = await this.findOnePhoto(photoid);
+        const photo = await this.findOnePhoto(photoid);
         // console.log(`addPhoto ${photoid}`, photo);
         if (!StudentPhotoRepository.isStudentPhoto(photo)) {
             throw new Error(`Bad photo supplied`);
@@ -66,7 +66,7 @@ export class StudentPhotoRepository extends Repository<StudentPhoto> {
                         .remove(photoid);
     }
 
-    static isStudentPhoto(studentphoto: any): studentphoto is StudentPhoto {
+    static isStudentPhoto(studentphoto: StudentPhoto): studentphoto is StudentPhoto {
         return typeof studentphoto === 'object'
             && typeof studentphoto.url === 'string';
     }

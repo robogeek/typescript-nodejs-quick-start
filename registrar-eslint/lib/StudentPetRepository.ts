@@ -13,7 +13,7 @@ export class StudentPetRepository extends Repository<StudentPet> {
         if (!StudentPetRepository.isStudentPet(studentpet)) {
             throw new Error(`Bad pet supplied`);
         }
-        let pet = new StudentPet();
+        const pet = new StudentPet();
         pet.name = studentpet.name;
         pet.breed = studentpet.breed;
         // The validation is now handled by
@@ -46,7 +46,7 @@ export class StudentPetRepository extends Repository<StudentPet> {
             throw new Error(`Bad pet supplied`);
         }
 
-        let student = await getStudentRepository().findOneStudent(studentid);
+        const student = await getStudentRepository().findOneStudent(studentid);
         await getStudentRepository().createQueryBuilder('student')
                 .relation(Student, "pet")
                 .of(student)
@@ -54,7 +54,7 @@ export class StudentPetRepository extends Repository<StudentPet> {
     }
 
     async studentHasNoPet(studentid: number): Promise<void> {
-        let student = await getStudentRepository().findOneStudent(studentid);
+        const student = await getStudentRepository().findOneStudent(studentid);
         if (!StudentRepository.isStudent(student)) {
             throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
         }
@@ -64,7 +64,7 @@ export class StudentPetRepository extends Repository<StudentPet> {
                 .set(null);
     }
 
-    static isStudentPet(studentpet: any): studentpet is StudentPet {
+    static isStudentPet(studentpet: StudentPet): studentpet is StudentPet {
         return typeof studentpet === 'object'
             && typeof studentpet.name === 'string'
             && typeof studentpet.breed === 'string';

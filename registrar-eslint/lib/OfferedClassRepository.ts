@@ -4,10 +4,10 @@ import {
 } from 'class-validator';
 import { OfferedClass, OfferedClassUpdater } from './entities/OfferedClass.js';
 import { normalizeNumber, StudentRepository } from './StudentRepository.js';
-import { getStudentRepository, Student, getOfferedClassRepository } from './index.js';
+import { getStudentRepository } from './index.js';
 import * as util from 'util';
 import * as yaml from 'js-yaml';
-import { promises as fs, read } from 'fs';
+import { promises as fs } from 'fs';
 
 class OfferedClassYAML {
     classes: Array<OfferedClass>;
@@ -17,7 +17,7 @@ class OfferedClassYAML {
 export class OfferedClassRepository extends Repository<OfferedClass> {
 
     async createAndSave(offeredClass: OfferedClass): Promise<string> {
-        let cls = new OfferedClass();
+        const cls = new OfferedClass();
         cls.code = offeredClass.code;
         cls.name = offeredClass.name;
         cls.hours = normalizeNumber(offeredClass.hours, 'Bad number of hours');
@@ -32,14 +32,14 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
     
     async allClasses(): Promise<OfferedClass []> {
-        let classes = await this.find({
+        const classes = await this.find({
             relations: [ "students" ]
         });
         return classes;
     }
 
     async findOneClass(code: string): Promise<OfferedClass> {
-        let cls = await this.findOne({ 
+        const cls = await this.findOne({ 
             where: { code: code },
             relations: [ "students" ]
         });
@@ -51,7 +51,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
 
     async classCodeExists(code: string): Promise<boolean> {
-        let cls = await this.findOne({
+        const cls = await this.findOne({
             where: { code: code }
         });
         if (!OfferedClassRepository.isOfferedClass(cls)) {
@@ -93,7 +93,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
 
     async enrollStudentInClass(
-                studentid: any, code: string
+                studentid: number, code: string
                 ): Promise<void> {
         /* let offered = await this.findOneClass(code);
         if (!OfferedClassRepository.isOfferedClass(offered)) {
@@ -127,7 +127,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         offered.students.push(student);
         await this.manager.save(offered); */
         
-        let offered = await this.findOneClass(code);
+        const offered = await this.findOneClass(code);
         await getStudentRepository().createQueryBuilder()
                 .relation(OfferedClass, 'students')
                 .of(offered)
@@ -135,7 +135,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
 
     async removeStudentFromClass(
-            studentid: any, code: string): Promise<void> {
+            studentid: number, code: string): Promise<void> {
     
         /* let offered = await this.findOneClass(code);
         if (!OfferedClassRepository.isOfferedClass(offered)) {
@@ -174,7 +174,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
             .of(studentid)
             .remove(offered); */
 
-        let offered = await this.findOneClass(code);
+        const offered = await this.findOneClass(code);
         await getStudentRepository().createQueryBuilder()
                 .relation(OfferedClass, 'students')
                 .of(offered)
@@ -182,24 +182,24 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
 
     async updateStudentEnrolledClasses(
-                studentid: any, codes: string[]
+                studentid: number, codes: string[]
                 ): Promise<void> {
-        let student = await getStudentRepository().findOneStudent(studentid);
+        const student = await getStudentRepository().findOneStudent(studentid);
         // console.log(`updateStudentEnrolledClasses studentid ${util.inspect(studentid)} codes ${util.inspect(codes)} ==> student ${util.inspect(student)}`);
         if (!StudentRepository.isStudent(student)) {
             throw new Error(`enrollStudentInClass did not find Student for ${util.inspect(studentid)}`);
         }
-        let newclasses = [];
-        for (let sclazz of student.classes) {
-            for (let code of codes) {
+        const newclasses = [];
+        for (const sclazz of student.classes) {
+            for (const code of codes) {
                 if (sclazz.code === code) {
                     newclasses.push(sclazz);
                 }
             }
         }
-        for (let code of codes) {
+        for (const code of codes) {
             let found = false;
-            for (let nclazz of newclasses) {
+            for (const nclazz of newclasses) {
                 if (nclazz.code === code) {
                     found = true;
                 }
@@ -227,10 +227,10 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
 
         // console.log(offered);
     
-        let all = await this.allClasses();
-        for (let cls of all) {
+        const all = await this.allClasses();
+        for (const cls of all) {
             let stillOffered = false;
-            for (let ofrd of offered.classes) {
+            for (const ofrd of offered.classes) {
                 if (ofrd.code === cls.code) {
                     stillOffered = true;
                     break;
@@ -240,7 +240,7 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
                 this.deleteOfferedClass(cls.code);
             }
         }
-        for (let updater of offered.classes) {
+        for (const updater of offered.classes) {
             if (!OfferedClassRepository.isOfferedClassUpdater(updater)) {
                 throw new Error(`updateClasses found classes entry that is not an OfferedClassUpdater ${util.inspect(updater)}`);
             }
@@ -256,14 +256,14 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
     }
 
 
-    static isOfferedClass(offeredClass: any): offeredClass is OfferedClass {
+    static isOfferedClass(offeredClass: OfferedClass): offeredClass is OfferedClass {
         return typeof offeredClass === 'object'
             && typeof offeredClass.code === 'string'
             && typeof offeredClass.name === 'string'
             && typeof offeredClass.hours === 'number';
     }
 
-    static isOfferedClassUpdater(updater: any): boolean {
+    static isOfferedClassUpdater(updater: OfferedClass): boolean {
         let ret = true;
         if (typeof updater !== 'object') {
             throw new Error('isOfferedClassUpdater must get object');
