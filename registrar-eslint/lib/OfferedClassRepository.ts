@@ -13,9 +13,17 @@ class OfferedClassYAML {
     classes: Array<OfferedClass>;
 }
 
+/**
+ * Custom repository for storing {@link OfferedClass} entities.
+ */
 @EntityRepository(OfferedClass)
 export class OfferedClassRepository extends Repository<OfferedClass> {
 
+    /**
+     * Create an {@link OfferedClass} instance in the database
+     * @param offeredClass Data object describing the {@link OfferedClass}
+     * @returns The _code_ for the class
+     */
     async createAndSave(offeredClass: OfferedClass): Promise<string> {
         const cls = new OfferedClass();
         cls.code = offeredClass.code;
@@ -31,6 +39,10 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return cls.code;
     }
     
+    /**
+     * Returns a list of all {@link OfferedClass} instances
+     * @returns An array of {@link OfferedClass} instances
+     */
     async allClasses(): Promise<OfferedClass []> {
         const classes = await this.find({
             relations: [ "students" ]
@@ -38,6 +50,11 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return classes;
     }
 
+    /**
+     * Find the {@link OfferedClass} for the given class code.
+     * @param code 
+     * @returns The corresponding {@link OfferedClass} instance
+     */
     async findOneClass(code: string): Promise<OfferedClass> {
         const cls = await this.findOne({ 
             where: { code: code },
@@ -50,6 +67,11 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         return cls;
     }
 
+    /**
+     * Tests to see if the class specified in {@param code} exists
+     * @param code The class code to check
+     * @returns Returns `true` if it exists, `false` otherwise
+     */
     async classCodeExists(code: string): Promise<boolean> {
         const cls = await this.findOne({
             where: { code: code }
@@ -61,6 +83,16 @@ export class OfferedClassRepository extends Repository<OfferedClass> {
         }
     }
 
+    /**
+     * Updates the {@link OfferedClass} entity named by `code` with
+     * the data in `offeredClass`.  This data has the shape 
+     * of {@link OfferedClass}, but can have missing fields.  Instead it must
+     * be approved by the {@link OfferedClassRepository.isOfferedClassUpdater}
+     * method.
+     * @param code The class code to update
+     * @param offeredClass The data to update in the entity
+     * @returns The class code which was updated
+     */
     async updateOfferedClass(
                 code: string,
                 offeredClass: OfferedClass

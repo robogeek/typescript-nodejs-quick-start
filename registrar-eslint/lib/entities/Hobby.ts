@@ -8,6 +8,9 @@ import {
     validateOrReject, IsString, IsAscii, Matches
 } from 'class-validator';
 
+/**
+ * Records information about hobbies practiced by students.
+ */
 @Entity()
 export class StudentHobby {
     @PrimaryGeneratedColumn()

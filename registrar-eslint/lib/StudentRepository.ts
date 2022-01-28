@@ -13,9 +13,18 @@ export enum Gender {
     male = "male", female = "female"
 }
 
+/**
+ * Repository for Student objects
+ */
 @EntityRepository(Student)
 export class StudentRepository extends Repository<Student> {
 
+    /**
+     * Creates a Student object from information passed in student,
+     * saving the data to the database.
+     * @param student Student object to save
+     * @returns ID for newly created Student object
+     */
     async createAndSave(student: Student): Promise<number> {
         const stud = new Student();
         stud.name = student.name;
@@ -32,6 +41,10 @@ export class StudentRepository extends Repository<Student> {
         return stud.id;
     }
 
+    /**
+     * 
+     * @returns LIst of all Students in the database
+     */
     async findAll(): Promise<Student []> {
         const students = await this.find({
             relations: [ "classes", "pet", "photos", "hobbies" ]
@@ -39,6 +52,11 @@ export class StudentRepository extends Repository<Student> {
         return students;
     }
 
+    /**
+     * Checks if a Student with this ID exists.
+     * @param id Student ID number
+     * @returns Indicates if the student exists
+     */
     async studentIDexists(id: number): Promise<boolean> {
         const student: Student = await this.findOne({
             where: { id: id }
@@ -50,11 +68,17 @@ export class StudentRepository extends Repository<Student> {
         }
     }
 
+    /**
+     * Finds the Student object for the given ID number
+     * @param id Student ID number
+     * @returns The matching Student
+     */
     async findOneStudent(id: number): Promise<Student> {
 
         const student = await this.createQueryBuilder("student")
                         .where("student.id = :id", { id: id })
                         .getOne();
+        if (!student) return undefined;
 
         student.classes = await this.createQueryBuilder()
                         .relation(Student, "classes")
