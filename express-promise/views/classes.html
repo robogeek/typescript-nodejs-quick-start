@@ -1,0 +1,35 @@
+{% extends "layout.njk" %}
+
+{% block header %}
+{% include "header.njk" %}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+    <div id="classes" class="col-12 btn-group-vertical" role="group">
+      {% for class in classes %}
+      <a class="btn btn-lg btn-block btn-outline-dark" 
+          href="/classes/read?code={{class.code}}">
+        {{class.name}} ({{class.hours}} hours)
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+<form method="POST" 
+          action="/classes/update/upload" 
+          enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="formFile" class="form-label">
+          Upload classes update file</label>
+      <input class="form-control"
+            accept=".yml,.yaml"
+            type="file" name="classesyml">
+    </div>
+
+    <button type="submit" class="btn btn-outline-dark">Upload</button>
+</form>
+{% endblock %}

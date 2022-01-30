@@ -1,0 +1,41 @@
+{
+  "name": "registrar",
+  "version": "1.0.0",
+  "description": "Database persistence for university registrar",
+  "exports": {
+    "require": "./dist-cjs/index.js",
+    "import": "./wrapper-esm/index.mjs"
+  },
+  "main": "./dist-cjs/index.js",
+  "types": "./dist-cjs/index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "clean": "rm -rf dist-cjs dist-esm",
+    "build": "npm-run-all build:cjs",
+    "build:cjs": "tsc -p ./tsconfig-cjs.json",
+    "build:esm": "tsc -p ./tsconfig-esm.json",
+    "build:esm-fix": "renamer --verbose --find '/\\.js$/' --replace '.mjs' './dist-esm/**/*.js'",
+    "build:cjs-cli": "tsc --outDir dist-cjs --rootDir lib --module commonjs --target es2021 --lib es6,es2021,esnext --moduleResolution Node --declaration --declarationMap --emitDecoratorMetadata --experimentalDecorators --inlineSources --inlineSourceMap",
+    "build:esm-cli": "tsc --outDir dist-esm --rootDir lib --module es2022 --target es2021 --lib es6,es2021,esnext --moduleResolution Node --declaration --declarationMap --emitDecoratorMetadata --experimentalDecorators --inlineSources --inlineSourceMap",
+    "watch": "tsc --watch",
+    "test": "cd test && npm run test",
+    "monitor": "nodemon --watch dist --exec 'npm run test'"
+  },
+  "author": "David Herron <david@davidherron.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/js-yaml": "^4.x",
+    "@types/node": "^16.x",
+    "nodemon": "^2.0.15",
+    "npm-run-all": "^4.1.5",
+    "renamer": "^4.0.0",
+    "typescript": "^4.5.x"
+  },
+  "dependencies": {
+    "class-validator": "^0.13.2",
+    "js-yaml": "^4.1.x",
+    "reflect-metadata": "^0.1.x",
+    "sqlite3": "^5.x",
+    "typeorm": "^0.2.x"
+  }
+}

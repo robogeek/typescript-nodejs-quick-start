@@ -1,36 +1,74 @@
 
 import * as util from 'util';
-import { Request, Response, NextFunction } from "express";
+import * as express from 'express';
 
-import {
-    classes as allClasses,
-    getOfferedClass
-} from '../models/classes';
+import { 
+    Student,
+    OfferedClass,
+    getOfferedClassRepository
+} from 'registrar';
+import * as fileUpload from 'express-fileupload';
+import { promises as fsp } from 'fs';
 
 
-export async function home(req: Request, res: Response, next: NextFunction) {
+export async function home(
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction): Promise<void> {
     try {
-        let classes = await allClasses();
+        let classes = await getOfferedClassRepository().allClasses();
         console.log(`controllers classes home ${util.inspect(classes)}`);
-        res.render('classes', { title: 'Classes', classes });
+        res.render('classes.html', { title: 'Classes', classes });
     } catch(err) {
         console.error(`class home ERROR ${err.stack}`);
         next(err); 
     }
 }
 
-export async function read(req: Request, res: Response, next: NextFunction) {
+export async function read(
+            req: express.Request,
+            res: express.Response,
+            next: express.NextFunction): Promise<void> {
     try {
         console.log(req.query);
-        let clazz = await getOfferedClass(req.query.code);
+        let clazz = await getOfferedClassRepository()
+                            .findOneClass(<string>req.query.code);
         console.log(`read ${req.query.code} => ${util.inspect(clazz)}`);
-        res.render('class', {
+        res.render('class.html', {
             title: clazz.name,
             code: clazz.code,
             class: clazz
         });
     } catch(err) {
         console.error(`class read ERROR ${err.stack}`);
+        next(err); 
+    }
+}
+
+export async function handleUpload(
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction): Promise<void> {
+    try {
+        // console.log(req.files);
+
+        if (!req.files
+         || Object.keys(req.files).length === 0) {
+            res.status(400).send('No files were uploaded.');
+            return;
+        }
+
+        const classesyaml = (<fileUpload.UploadedFile>req.files.classesyml);
+
+        if (classesyaml.mimetype !== 'application/x-yaml') {
+            res.status(400).send(`Uploaded file ${classesyaml} not a YAML file`);            
+        }
+
+        await getOfferedClassRepository().updateClasses(classesyaml.tempFilePath);
+        await fsp.unlink(classesyaml.tempFilePath);
+        res.redirect('/classes/list');
+    } catch(err) {
+        console.error(`class upload ERROR ${err.stack}`);
         next(err); 
     }
 }
